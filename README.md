@@ -1,54 +1,88 @@
-# Serverless image resizer
-| Environment  | <img src="https://img.shields.io/badge/LocalStack-deploys-4D29B4.svg?logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAKgAAACoABZrFArwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAALbSURBVHic7ZpNaxNRFIafczNTGIq0G2M7pXWRlRv3Lusf8AMFEQT3guDWhX9BcC/uFAr1B4igLgSF4EYDtsuQ3M5GYrTaj3Tmui2SpMnM3PlK3m1uzjnPw8xw50MoaNrttl+r1e4CNRv1jTG/+v3+c8dG8TSilHoAPLZVX0RYWlraUbYaJI2IuLZ7KKUWCisgq8wF5D1A3rF+EQyCYPHo6Ghh3BrP8wb1en3f9izDYlVAp9O5EkXRB8dxxl7QBoNBpLW+7fv+a5vzDIvVU0BELhpjJrmaK2NMw+YsIxunUaTZbLrdbveZ1vpmGvWyTOJToNlsuqurq1vAdWPMeSDzwzhJEh0Bp+FTmifzxBZQBXiIKaAq8BBDQJXgYUoBVYOHKQRUER4mFFBVeJhAQJXh4QwBVYeHMQJmAR5GCJgVeBgiYJbg4T8BswYPp+4GW63WwvLy8hZwLcd5TudvBj3+OFBIeA4PD596nvc1iiIrD21qtdr+ysrKR8cY42itCwUP0Gg0+sC27T5qb2/vMunB/0ipTmZxfN//orW+BCwmrGV6vd63BP9P2j9WxGbxbrd7B3g14fLfwFsROUlzBmNM33XdR6Meuxfp5eg54IYxJvXCx8fHL4F3w36blTdDI4/0WREwMnMBeQ+Qd+YC8h4g78wF5D1A3rEqwBiT6q4ubpRSI+ewuhP0PO/NwcHBExHJZZ8PICI/e73ep7z6zzNPwWP1djhuOp3OfRG5kLROFEXv19fXP49bU6TbYQDa7XZDRF6kUUtEtoFb49YUbh/gOM7YbwqnyG4URQ/PWlQ4ASllNwzDzY2NDX3WwioKmBgeqidgKnioloCp4aE6AmLBQzUExIaH8gtIBA/lFrCTFB7KK2AnDMOrSeGhnAJSg4fyCUgVHsolIHV4KI8AK/BQDgHW4KH4AqzCQwEfiIRheKKUAvjuuu7m2tpakPdMmcYYI1rre0EQ1LPo9w82qyNziMdZ3AAAAABJRU5ErkJggg=="> |
-| Services     | S3, SSM, Lambda, SNS, SES                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
-| Integrations | AWS SDK, AWS CLI, GitHub actions, pytest                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
-| Categories   | Serverless, S3 notifications, S3 website, Lambda function URLs, LocalStack developer endpoints, JavaScript, Python                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| Level        | Intermediate                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+# Project Setup and Management
 
-## Introduction
-
-
-Here's a short summary of AWS service features we use:
-* S3 bucket notifications to trigger a Lambda
-* S3 pre-signed POST
-* S3 website
-* Lambda function URLs
-* Lambda SNS on failure destination
-* SNS to SES Subscriptions
-* SES LocalStack testing endpoint
-
-## Architecture overview
+This guide outlines the setup and management of the LocalStack-based environment and Lambda functions, including key make commands.
 
 ## Prerequisites
+- Install `LocalStack` for local AWS service emulation.
+- Install necessary dependencies using the `install` command provided below.
+- Ensure you have AWS credentials set to `test` for local usage.
 
-### Dev environment
+## Makefile Commands
 
-Make sure you use the same version as the Python Lambdas to make Pillow work.
-If you use pyenv, then first install and activate Python 3.11:
+### Environment Variables
+- **`AWS_ACCESS_KEY_ID`**: Default set to `test` for local use.
+- **`AWS_SECRET_ACCESS_KEY`**: Default set to `test` for local use.
+- **`ACTIVATE_PRO`**: Controls activation of LocalStack Pro (default is `0`).
 
-```bash
-pyenv install 3.11.6
-pyenv global 3.11.6
-```
+### Commands
 
-```console
-% python --version
-Python 3.11.6
-```
+| Command           | Description |
+|-------------------|-------------|
+| `make usage`      | Show the list of commands and descriptions |
+| `make install`    | Install dependencies for development |
+| `make build`      | Build all Lambda functions in the `lambdas` folder |
+| `make awslocal-setup` | Deploy the application locally using `awslocal` (AWS CLI wrapper) |
+| `make start`      | Start LocalStack Pro in detached mode |
+| `make stop`       | Stop LocalStack Pro |
+| `make clean`      | Clean up environment (stop containers, remove images, and Lambda zips) |
+| `make full`       | Perform a full setup, starting LocalStack and deploying the application |
+| `make repost`     | Sync website content to S3 bucket and configure static site hosting |
 
-Create a virtualenv and install all the development dependencies there:
+---
 
-```bash
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements-dev.txt
-```
+## Makefile Code
 
-## Instructions
+Here's the complete `Makefile` with inline comments for reference:
 
-You can set up and deploy the sample application on LocalStack by executing the commands in our Makefile. First, create a `.env` file using the provided `.env.example` file as a template, and include your LocalStack token in it. Then, run `make start` to initiate LocalStack on your machine. 
+```makefile
+# Define AWS credentials for local use
+export AWS_ACCESS_KEY_ID ?= test
+export AWS_SECRET_ACCESS_KEY ?= test
+exit ACTIVATE_PRO=0
+SHELL := /bin/bash
 
-Next, execute `make install` to install needed dependencies.
+# Load environment variables from `.env` file
+include .env
 
-After that, launch `make terraform-setup` to provision the infrastructure on LocalStack using Terraform CLI and its scripts. Alternatively, run `make awslocal-setup` to set up the infrastructure using `awslocal`, a wrapper for the AWS CLI.
+# List available commands with descriptions
+usage:              ## Show this help
+		@grep -F -h "##" $(MAKEFILE_LIST) | grep -F -v grep -F | sed -e 's/\\$$//' -e 's/##//'
 
+# Install necessary Python dependencies
+install:            ## Install dependencies
+		@pip install -r requirements-dev.txt
+
+# Build Lambda functions from the `lambdas` directory
+build:              ## Build lambdas in the lambdas folder
+		bin/build_lambdas.sh;
+
+# Set up application locally using `awslocal`
+awslocal-setup:     ## Deploy the application locally using `awslocal`, a wrapper for the AWS CLI
+		$(MAKE) build
+		deployment/awslocal/deploy.sh
+
+# Start LocalStack Pro container in detached mode
+start:              ## Start the LocalStack Pro container in detached mode
+		@LOCALSTACK_AUTH_TOKEN=$(LOCALSTACK_AUTH_TOKEN) localstack start -d
+
+# Stop the LocalStack Pro container
+stop:               ## Stop the LocalStack Pro container
+		localstack stop
+
+# Clean up all containers, images, and Lambda zip files
+clean:              ## Clean up environment
+		localstack stop
+		docker image prune -a --force
+		rm lambdas/*/lambda.zip
+
+# Perform a full setup, including start, install, and local deployment
+full:               ## Run a full setup, starting LocalStack and deploying the application
+		make start install awslocal-setup
+
+# Re-sync website files with S3 bucket and enable static hosting
+repost:             ## Re-sync website content to S3
+		awslocal s3 sync --delete ./website s3://webapp
+		awslocal s3 website s3://webapp --index-document index.html
+
+# Declare phony targets (i.e., not tied to specific files)
+.PHONY: usage install build awslocal-setup start stop full clean repost
