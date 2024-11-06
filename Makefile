@@ -23,5 +23,11 @@ start:				## Start the LocalStack Pro container in the detached mode
 
 stop:				## Stop the LocalStack Pro container
 		localstack stop
+clean:				## clean up everything
+		localstack stop
+		docker image prune -a
+		rm lambda\*\*.zip
+full:				## Stop the LocalStack Pro container
+		localstack start install awslocal-setup
 
-.PHONY: usage install build awslocal-setup terraform-destroy start stop
+.PHONY: usage install build awslocal-setup terraform-destroy start stop full clean
