@@ -11,7 +11,7 @@ def get_bucket_name() -> str:
     # Simulate getting the bucket name for processed files
     return "localstack-s3etl-app-processed"
 
-def extract_and_create_structure(tar_file_path: str, extracted_dir_path: str, file_key_prefix: str) -> None:
+def extract_and_create_structure(tar_file_path: str, extracted_dir_path: str, file_key_prefix: str, file_key_server: str) -> None:
     """
     Extract files from tar and upload them to S3 with proper structure.
     """
@@ -31,7 +31,7 @@ def extract_and_create_structure(tar_file_path: str, extracted_dir_path: str, fi
             extracted_file_path = os.path.join(extracted_dir_path, file_name)
 
             # Build the S3 key with the full directory structure
-            s3_key = f"{file_key_prefix}/{file_name}"
+            s3_key = f"{file_key_prefix}/{file_key_server}/{file_name}"
             print(f"Uploading {file_name} to s3://{get_bucket_name()}/{s3_key}")
 
             # Extract the file
@@ -57,6 +57,7 @@ def handler(event, context):
         
         # Extract the file prefix (before the epoch) to form the correct directory structure
         file_key_prefix = key.split('_')[0]  # This will give 'WilliamHill/gibux341.prod.williamhill.plc'
+        file_key_server = key.split('_')[1]  # This will give 'WilliamHill/gibux341.prod.williamhill.plc'
         
         # Call the function to extract the tar and upload with the correct structure
-        extract_and_create_structure(tmp_file_path, extracted_dir_path, file_key_prefix)
+        extract_and_create_structure(tmp_file_path, extracted_dir_path, file_key_prefix, file_key_server)
