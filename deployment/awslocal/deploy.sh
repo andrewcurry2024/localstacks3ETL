@@ -46,22 +46,22 @@ awslocal lambda create-function-url-config \
 
 
 awslocal lambda create-function \
-    --function-name resize \
+    --function-name transform \
     --runtime python3.11 \
     --timeout 10 \
-    --zip-file fileb://lambdas/resize/lambda.zip \
+    --zip-file fileb://lambdas/transform/lambda.zip \
     --handler handler.handler \
     --dead-letter-config TargetArn=arn:aws:sns:us-east-1:000000000000:failed-process-topic \
     --role arn:aws:iam::000000000000:role/lambda-role \
     --environment Variables="{STAGE=local}"
 
-awslocal lambda wait function-active-v2 --function-name resize
-awslocal lambda put-function-event-invoke-config --function-name resize --maximum-event-age-in-seconds 3600 --maximum-retry-attempts 0
+awslocal lambda wait function-active-v2 --function-name transform
+awslocal lambda put-function-event-invoke-config --function-name transform --maximum-event-age-in-seconds 3600 --maximum-retry-attempts 0
 
-fn_resize_arn=$(awslocal lambda get-function --function-name resize --output json | jq -r .Configuration.FunctionArn)
+fn_transform_arn=$(awslocal lambda get-function --function-name transform --output json | jq -r .Configuration.FunctionArn)
 awslocal s3api put-bucket-notification-configuration \
     --bucket localstack-s3etl-app-raw \
-    --notification-configuration "{\"LambdaFunctionConfigurations\": [{\"LambdaFunctionArn\": \"$fn_resize_arn\", \"Events\": [\"s3:ObjectCreated:*\"]}]}"
+    --notification-configuration "{\"LambdaFunctionConfigurations\": [{\"LambdaFunctionArn\": \"$fn_transform_arn\", \"Events\": [\"s3:ObjectCreated:*\"]}]}"
 
 awslocal s3 mb s3://webapp
 awslocal s3 sync --delete ./website s3://webapp

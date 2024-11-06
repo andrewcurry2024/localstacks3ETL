@@ -7,7 +7,7 @@
 os=$(uname -s)
 if [ "$os" == "Darwin" ]; then
     (
-        cd lambdas/resize
+        cd lambdas/transform
         rm -rf libs lambda.zip
         docker run --platform linux/x86_64 --rm -v "$PWD":/var/task "public.ecr.aws/sam/build-python3.11" /bin/sh -c "pip3 install -r requirements.txt -t libs; exit"
 
@@ -17,7 +17,7 @@ if [ "$os" == "Darwin" ]; then
     )
 else
     (
-        cd lambdas/resize
+        cd lambdas/transform
         rm -rf package lambda.zip
         mkdir package
         pip3 install -r requirements.txt --platform manylinux2014_x86_64 --only-binary=:all: -t package
