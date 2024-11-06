@@ -86,6 +86,7 @@ repost:             ## Re-sync website content to S3
 
 # Declare phony targets (i.e., not tied to specific files)
 .PHONY: usage install build awslocal-setup start stop full clean repost
+```
 
 # LocalStack S3 ETL Application
 
@@ -145,6 +146,7 @@ Before starting, ensure you have the following tools installed:
     ├── app.js                # JavaScript for the web app
     ├── favicon.ico           # Web app favicon
     └── index.html            # HTML for the web app
+```
 
 
 
@@ -176,6 +178,7 @@ This application is designed to simulate a serverless data pipeline using **Loca
 4. **Configure S3 Event Notifications**: The **transform Lambda** is triggered automatically when a new file is uploaded to the raw bucket via S3 event notifications.
 
 5. **Deploy Website**: A static website is served from the `webapp` S3 bucket, providing a frontend for interacting with the application.
+```
 
 ### Example Deployment Script:
 
@@ -239,9 +242,10 @@ awslocal s3api put-bucket-notification-configuration \
 awslocal s3 mb s3://webapp
 awslocal s3 sync --delete ./website s3://webapp
 awslocal s3 website s3://webapp --index-document index.html
+```
 
-
-•	Upload files via the frontend, which will generate pre-signed URLs.
-•	Files will be processed by the Lambda functions and stored in the processed S3 bucket.
-•	In case of a failure, an email notification will be sent via SNS.
+## Functionality in Brief
+-	Upload files via the frontend, which will generate pre-signed URLs.
+-	Files will be processed by the Lambda functions and stored in the processed S3 bucket.
+-	In case of a failure, an email notification will be sent via SNS.
 
