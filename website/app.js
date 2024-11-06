@@ -108,7 +108,7 @@
                         updateImageList();
                     },
                     error: function () {
-                        alert("error! check the logs");
+                        alert("error! check the logs 1");
                     },
                     complete: function (event) {
                         console.log("done", event);
@@ -144,7 +144,7 @@
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 console.log("Error:", textStatus, errorThrown);
-                alert("error! check the logs");
+                alert("error! check the logs 2");
             }
         });
     }
@@ -153,10 +153,5 @@
     $("#updateImageListButton").click(function (event) {
         updateImageList();
     });
-
-    // If the function URL for the list is set, update the image list on page load
-    if (functionUrlList) {
-        updateImageList();
-    }
 
 })(jQuery);
