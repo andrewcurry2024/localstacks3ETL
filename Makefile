@@ -28,6 +28,6 @@ clean:				## clean up everything
 		docker image prune -a
 		rm lambda\*\*.zip
 full:				## Stop the LocalStack Pro container
-		localstack start install awslocal-setup
+		make start install awslocal-setup
 
 .PHONY: usage install build awslocal-setup terraform-destroy start stop full clean
