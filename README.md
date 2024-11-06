@@ -47,5 +47,9 @@ modify.env if needed
 Then, run `make start` to initiate LocalStack on your machine. 
 Next, execute `make install` to install needed dependencies.
 After that, run `make awslocal-setup` to set up the infrastructure using `awslocal`, a wrapper for the AWS CLI.
-
+```bash
+make start
+make install
+make awslocal-setup
+```
 
