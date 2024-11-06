@@ -35,7 +35,6 @@
         await loadUrl("presign", "functionUrlPresign");
         await loadUrl("list", "functionUrlList");
 
-        alert("Function URL configurations loaded");
     }
 
     // Call loadFromAPI function on page load
