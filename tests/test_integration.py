@@ -39,10 +39,10 @@ def test_s3_resize_integration():
     file = os.path.join(os.path.dirname(__file__), "nyan-cat.png")
     key = os.path.basename(file)
 
-    parameter = ssm.get_parameter(Name="/localstack-thumbnail-app/buckets/images")
+    parameter = ssm.get_parameter(Name="/localstack-s3etl-app/buckets/raw")
     source_bucket = parameter["Parameter"]["Value"]
 
-    parameter = ssm.get_parameter(Name="/localstack-thumbnail-app/buckets/resized")
+    parameter = ssm.get_parameter(Name="/localstack-s3etl-app/buckets/processed")
     target_bucket = parameter["Parameter"]["Value"]
 
     s3.upload_file(file, Bucket=source_bucket, Key=key)
@@ -65,7 +65,7 @@ def test_failure_sns_to_ses_integration():
     file = os.path.join(os.path.dirname(__file__), "some-file.txt")
     key = f"{uuid.uuid4()}-{os.path.basename(file)}"
 
-    parameter = ssm.get_parameter(Name="/localstack-thumbnail-app/buckets/images")
+    parameter = ssm.get_parameter(Name="/localstack-s3etl-app/buckets/raw")
     source_bucket = parameter["Parameter"]["Value"]
 
     s3.upload_file(file, Bucket=source_bucket, Key=key)

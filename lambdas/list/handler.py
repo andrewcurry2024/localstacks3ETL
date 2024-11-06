@@ -17,21 +17,21 @@ ssm: "SSMClient" = boto3.client("ssm", endpoint_url=endpoint_url)
 
 
 def get_bucket_name_images() -> str:
-    parameter = ssm.get_parameter(Name="/localstack-thumbnail-app/buckets/images")
+    parameter = ssm.get_parameter(Name="/localstack-s3etl-app/buckets/raw")
     return parameter["Parameter"]["Value"]
 
 
 def get_bucket_name_resized() -> str:
-    parameter = ssm.get_parameter(Name="/localstack-thumbnail-app/buckets/resized")
+    parameter = ssm.get_parameter(Name="/localstack-s3etl-app/buckets/processed")
     return parameter["Parameter"]["Value"]
 
 
 def handler(event, context):
-    images_bucket = get_bucket_name_images()
-    images = s3.list_objects(Bucket=images_bucket)
+    raw_bucket = get_bucket_name_images()
+    images = s3.list_objects(Bucket=raw_bucket)
 
     if not images.get("Contents"):
-        print(f"Bucket {images_bucket} is empty")
+        print(f"Bucket {raw_bucket} is empty")
         return []
 
     result = {}
@@ -44,7 +44,7 @@ def handler(event, context):
                 "Size": obj["Size"],
                 "URL": s3.generate_presigned_url(
                     ClientMethod="get_object",
-                    Params={"Bucket": images_bucket, "Key": obj["Key"]},
+                    Params={"Bucket": raw_bucket, "Key": obj["Key"]},
                     ExpiresIn=3600,
                 ),
             },

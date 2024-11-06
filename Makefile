@@ -25,9 +25,12 @@ stop:				## Stop the LocalStack Pro container
 		localstack stop
 clean:				## clean up everything
 		localstack stop
-		docker image prune -a
-		rm lambda\*\*.zip
+		docker image prune -a --force
+		rm lambdas/*/lambda.zip
 full:				## Stop the LocalStack Pro container
 		make start install awslocal-setup
+repost:		# repost website stuff (saves reloading)	
+		awslocal s3 sync --delete ./website s3://webapp
+		awslocal s3 website s3://webapp --index-document index.html
 
-.PHONY: usage install build awslocal-setup terraform-destroy start stop full clean
+.PHONY: usage install build awslocal-setup terraform-destroy start stop full clean repost

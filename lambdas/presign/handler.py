@@ -19,7 +19,7 @@ ssm: "SSMClient" = boto3.client("ssm", endpoint_url=endpoint_url)
 
 
 def get_bucket_name() -> str:
-    parameter = ssm.get_parameter(Name="/localstack-thumbnail-app/buckets/images")
+    parameter = ssm.get_parameter(Name="/localstack-s3etl-app/buckets/raw")
     return parameter["Parameter"]["Value"]
 
 

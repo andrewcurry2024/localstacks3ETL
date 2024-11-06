@@ -2,15 +2,15 @@
 
 export AWS_DEFAULT_REGION=us-east-1
 
-awslocal s3 mb s3://localstack-thumbnails-app-images
-awslocal s3 mb s3://localstack-thumbnails-app-resized
+awslocal s3 mb s3://localstack-s3etl-app-raw
+awslocal s3 mb s3://localstack-s3etl-app-processed
 
-awslocal ssm put-parameter --name /localstack-thumbnail-app/buckets/images --type "String" --value "localstack-thumbnails-app-images"
-awslocal ssm put-parameter --name /localstack-thumbnail-app/buckets/resized --type "String" --value "localstack-thumbnails-app-resized"
+awslocal ssm put-parameter --name /localstack-s3etl-app/buckets/raw --type "String" --value "localstack-s3etl-app-raw"
+awslocal ssm put-parameter --name /localstack-s3etl-app/buckets/processed --type "String" --value "localstack-s3etl-app-processed"
 
-awslocal sns create-topic --name failed-resize-topic
+awslocal sns create-topic --name failed-process-topic
 awslocal sns subscribe \
-    --topic-arn arn:aws:sns:us-east-1:000000000000:failed-resize-topic \
+    --topic-arn arn:aws:sns:us-east-1:000000000000:failed-process-topic \
     --protocol email \
     --notification-endpoint my-email@example.com
 
@@ -51,7 +51,7 @@ awslocal lambda create-function \
     --timeout 10 \
     --zip-file fileb://lambdas/resize/lambda.zip \
     --handler handler.handler \
-    --dead-letter-config TargetArn=arn:aws:sns:us-east-1:000000000000:failed-resize-topic \
+    --dead-letter-config TargetArn=arn:aws:sns:us-east-1:000000000000:failed-process-topic \
     --role arn:aws:iam::000000000000:role/lambda-role \
     --environment Variables="{STAGE=local}"
 
@@ -60,7 +60,7 @@ awslocal lambda put-function-event-invoke-config --function-name resize --maximu
 
 fn_resize_arn=$(awslocal lambda get-function --function-name resize --output json | jq -r .Configuration.FunctionArn)
 awslocal s3api put-bucket-notification-configuration \
-    --bucket localstack-thumbnails-app-images \
+    --bucket localstack-s3etl-app-raw \
     --notification-configuration "{\"LambdaFunctionConfigurations\": [{\"LambdaFunctionArn\": \"$fn_resize_arn\", \"Events\": [\"s3:ObjectCreated:*\"]}]}"
 
 awslocal s3 mb s3://webapp
