@@ -1,1 +1,1 @@
-[]
+{"errorMessage": "name 'get_bucket_name_files' is not defined", "errorType": "NameError", "requestId": "6d45f44f-8c10-47a7-a323-a9c86dfb7517", "stackTrace": ["  File \"/var/task/handler.py\", line 55, in handler\n    raw_bucket = get_bucket_name_files()\n"]}

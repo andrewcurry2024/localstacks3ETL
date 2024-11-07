@@ -88,6 +88,7 @@ def handler(event, context):
 
 
 # Get UTC time with zoneinfo
+    # Get the current time in UTC using ZoneInfo
     now = datetime.datetime.utcnow().replace(tzinfo=ZoneInfo("UTC"))
     ten_minutes_ago = now - datetime.timedelta(minutes=10)
 
@@ -95,8 +96,12 @@ def handler(event, context):
     processed_files = list_all_files(processed_bucket)
 
     for obj in processed_files:
-        # Make sure LastModified is aware of the timezone
-        obj_last_modified = obj["LastModified"].replace(tzinfo=pytz.utc)
+    # Ensure obj["LastModified"] is timezone-aware, using ZoneInfo
+        obj_last_modified = obj["LastModified"].replace(tzinfo=ZoneInfo("UTC"))
+
+    # Skip files that are older than 10 minutes
+        if obj_last_modified < ten_minutes_ago:
+            continue
 
         # Skip files that are older than 10 minutes
         if obj_last_modified < ten_minutes_ago:
