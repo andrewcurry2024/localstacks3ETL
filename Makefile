@@ -19,12 +19,46 @@ awslocal-setup: 		## Deploy the application locally using `awslocal`, a wrapper 
 		deployment/awslocal/deploy.sh
 
 start:				## Start the LocalStack Pro container in the detached mode
-		@LOCALSTACK_AUTH_TOKEN=$(LOCALSTACK_AUTH_TOKEN) localstack start -d
+		#@LOCALSTACK_AUTH_TOKEN=$(LOCALSTACK_AUTH_TOKEN) localstack start -d
+		# Create Docker network if not already exists
+		docker network create localstack_network || echo "Network already exists"
+
+		# Start InfluxDB container and connect it to the localstack_network
+		docker run -d --network localstack_network --name influxdb \
+		  -e INFLUXDB_DB=mydb \
+		  -e INFLUXDB_ADMIN_USER=admin \
+		  -e INFLUXDB_ADMIN_PASSWORD=adminpassword \
+		  -p 8086:8086 influxdb:latest
+
+		# Start Grafana container and connect it to the localstack_network
+		docker run -d --network localstack_network --name grafana \
+		  -e GF_SECURITY_ADMIN_PASSWORD=admin \
+		  -p 3000:3000 grafana/grafana:latest
+
+		echo "Starting LocalStack with provided AUTH_TOKEN..."
+		@LOCALSTACK_AUTH_TOKEN=$(LOCALSTACK_AUTH_TOKEN) localstack start --network localstack_network -d
+		
+
+		# Wait for the services to initialize (optional, you can increase sleep time if necessary)
+		echo "Waiting for services to start..."
+		sleep 15
+
+		echo "LocalStack, InfluxDB, and Grafana are now running."
+		echo "Grafana is available at http://localhost:3000"
+		echo "InfluxDB is available at http://localhost:8086"
 
 stop:				## Stop the LocalStack Pro container
-		localstack stop
+		# Stop and remove the containers
+		docker stop localstack influxdb grafana || echo "One or more containers are not running."
+		docker rm localstack influxdb grafana || echo "One or more containers could not be removed."
+
+		# Optionally, remove the Docker network if it's no longer needed
+		docker network rm localstack_network || echo "Network was not removed."
+
+		echo "LocalStack, InfluxDB, and Grafana have been stopped and removed."
+
 clean:				## clean up everything
-		localstack stop
+		make stop
 		docker image prune -a --force
 		rm lambdas/*/lambda.zip
 full:				## Stop the LocalStack Pro container

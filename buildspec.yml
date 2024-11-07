@@ -22,18 +22,39 @@ phases:
       - pip install localstack
       - docker pull public.ecr.aws/localstack/localstack:latest
       - docker image tag public.ecr.aws/localstack/localstack:latest localstack/localstack:latest
-      - localstack start -d
+
+      # Pull InfluxDB and Grafana images
+      - docker pull influxdb:latest
+      - docker pull grafana/grafana:latest
+
+      # Run LocalStack, InfluxDB, and Grafana containers in the background
+      - docker network create localstack_network || true  # Create network if not already exists
+      - docker run -d --network localstack_network --name influxdb -e INFLUXDB_DB=mydb -e INFLUXDB_ADMIN_USER=admin -e INFLUXDB_ADMIN_PASSWORD=adminpassword -p 8086:8086 influxdb:latest
+      - docker run -d --network localstack_network --name grafana -p 3000:3000 grafana/grafana:latest
+      - docker run -d --network localstack_network --name localstack -p 4566:4566 localstack/localstack:latest
+      - localstack start -d  # Start LocalStack in the background
+      
+      # Optionally, wait for the services to be ready
+      - sleep 15  # Sleep for a few seconds to ensure services are ready to accept requests
+
   pre_build:
     commands:
       - bin/build_lambdas.sh
       - deployment/awslocal/deploy.sh
+
   build:
     commands:
       - pytest tests
     finally:
       - localstack logs
 
+  post_build:
+    commands:
+      - echo "InfluxDB and Grafana are running at:"
+      - echo "  - InfluxDB: http://localhost:8086"
+      - echo "  - Grafana: http://localhost:3000"
+      - localstack logs
+
 cache:
   paths:
     - '/root/.pyenv/versions/3.11.6/**/*'
-    
