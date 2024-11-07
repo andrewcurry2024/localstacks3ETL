@@ -43,7 +43,6 @@
 
     /* Card Header */
     .card-header {
-      background-color: #FFAB91; /* Light orange for card headers */
       color: #333;
       font-weight: bold;
     }
@@ -190,25 +189,8 @@
 
 <!-- handlebar templates -->
 <script id="image-item-template" type="text/x-handlebars-template">
-  <div class="card mt-3">
-    <div class="card-header">{{Name}}</div>
-    <div class="row justify-content">
-      <div class="col-auto">
-        <img src="{{Resized.URL}}" class="img-fluid" alt="{{Name}}">
-      </div>
-      <div class="col">
-        <div class="card-body">
-          <p class="card-text"><b>{{Name}}</b></p>
-          <p class="card-text">Timestamp: {{Timestamp}}</p>
-          <p class="card-text">
-            <a href="{{Original.URL}}">Original</a> ({{Original.Size}} bytes)
-          </p>
-          <p class="card-text">
-            <a href="{{Resized.URL}}">Resized</a> ({{Resized.Size}} bytes)
-          </p>
-        </div>
-      </div>
-    </div>
+  <div>
+    <div class="card-header">{{Name}} {{Timestamp}}</div>
   </div>
 </script>
 
