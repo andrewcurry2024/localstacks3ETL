@@ -13,6 +13,7 @@ s3_media/
 build/
 develop-eggs/
 dist/
+htmlcov/
 downloads/
 eggs/
 .eggs/
