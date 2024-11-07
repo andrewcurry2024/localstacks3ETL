@@ -1,7 +1,6 @@
 #!/bin/bash
 
 (cd lambdas/presign; rm -f lambda.zip; zip lambda.zip handler.py)
-
 (cd lambdas/list; rm -f lambda.zip; zip lambda.zip handler.py)
 
 os=$(uname -s)

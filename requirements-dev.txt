@@ -11,3 +11,4 @@ awscli
 awscli-local
 terraform-local
 pytest-cov
+pytz
