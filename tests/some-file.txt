@@ -1,2 +1,2 @@
-not an image!
+not a valid file!
 when processing this file, the lambda will fail.

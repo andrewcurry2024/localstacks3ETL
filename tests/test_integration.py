@@ -31,34 +31,54 @@ awslambda: "LambdaClient" = boto3.client(
 def _wait_for_lambdas():
     # makes sure that the lambdas are available before running integration tests
     awslambda.get_waiter("function_active").wait(FunctionName="presign")
-    awslambda.get_waiter("function_active").wait(FunctionName="resize")
+    awslambda.get_waiter("function_active").wait(FunctionName="transform")
     awslambda.get_waiter("function_active").wait(FunctionName="list")
 
+import os
+import time
+import uuid
+from urllib.parse import urlparse
 
-def test_s3_resize_integration():
-    file = os.path.join(os.path.dirname(__file__), "nyan-cat.png")
+def test_s3_integration_with_new_processing():
+    # Set up test file
+    file = os.path.join(os.path.dirname(__file__), "WilliamHill_gibux341.prod.williamhill.plc_1728569682-110000-133000.tar")
     key = os.path.basename(file)
+    unique_id = str(uuid.uuid4())
 
-    parameter = ssm.get_parameter(Name="/localstack-s3etl-app/buckets/raw")
-    source_bucket = parameter["Parameter"]["Value"]
+    # Extract bucket names from SSM parameters
+    raw_bucket = ssm.get_parameter(Name="/localstack-s3etl-app/buckets/raw")["Parameter"]["Value"]
+    processed_bucket = ssm.get_parameter(Name="/localstack-s3etl-app/buckets/processed")["Parameter"]["Value"]
 
-    parameter = ssm.get_parameter(Name="/localstack-s3etl-app/buckets/processed")
-    target_bucket = parameter["Parameter"]["Value"]
+    # Upload the test file to the raw bucket
+    s3.upload_file(file, Bucket=raw_bucket, Key=key)
 
-    s3.upload_file(file, Bucket=source_bucket, Key=key)
+    # Generate expected structured path for processed file
+    # Assuming structure is "processed/Category/Identifier/Epoch/File"
+    structured_path = f"processed/WilliamHill/gibux341.prod.williamhill.plc/{unique_id}/{key}"
 
-    # wait for the resized image to appear
-    s3.get_waiter("object_exists").wait(Bucket=target_bucket, Key=key)
+    # Wait for the processed file to appear
+    s3.get_waiter("object_exists").wait(Bucket=processed_bucket, Key=structured_path)
 
-    s3.head_object(Bucket=target_bucket, Key=key)
-    s3.download_file(
-        Bucket=target_bucket, Key=key, Filename="/tmp/nyan-cat-resized.png"
-    )
+    # Validate processed file is present and download it for comparison
+    s3.head_object(Bucket=processed_bucket, Key=structured_path)
+    resized_file_path = "/tmp/nyan-cat-resized.png"
+    s3.download_file(Bucket=processed_bucket, Key=structured_path, Filename=resized_file_path)
 
-    assert os.stat("/tmp/nyan-cat-resized.png").st_size < os.stat(file).st_size
+    # Assert the processed file size is reduced (indicating resizing or processing)
+    assert os.stat(resized_file_path).st_size < os.stat(file).st_size
 
-    s3.delete_object(Bucket=source_bucket, Key=key)
-    s3.delete_object(Bucket=target_bucket, Key=key)
+    # Optional: Validate log entries if logs are captured
+    logs = get_lambda_logs()  # Assuming you have a function to capture logs
+    assert "Uploading" in logs
+    assert "Extracting" in logs
+
+    # Clean up uploaded files from S3
+    s3.delete_object(Bucket=raw_bucket, Key=key)
+    s3.delete_object(Bucket=processed_bucket, Key=structured_path)
+
+    # Clean up local files
+    if os.path.exists(resized_file_path):
+        os.remove(resized_file_path)
 
 
 def test_failure_sns_to_ses_integration():
