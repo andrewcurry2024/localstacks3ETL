@@ -1,11 +1,5 @@
 on:
-  workflow_dispatch:
-    inputs:
-      release-tag:
-        type: string
-        required: true
-        description: This will be the version of the release, but will also be used as 'tag' for the localstack docker image
-  push:
+  pull_request:
     paths-ignore:
       - ./*.md
       - LICENSE
@@ -13,6 +7,9 @@ on:
       - .gitlab-ci.yml
     branches:
       - main
+
+permissions:
+  contents: write
             
 permissions:
   contents: write
