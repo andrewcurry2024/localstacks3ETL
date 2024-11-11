@@ -63,6 +63,7 @@ stop:				## Stop the LocalStack Pro container
 		echo "LocalStack, InfluxDB, and Grafana have been stopped and removed."
 
 clean:				## clean up everything
+		localstack stop
 		make stop
 		docker image prune -a --force
 		rm lambdas/*/lambda.zip
