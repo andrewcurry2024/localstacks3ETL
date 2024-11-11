@@ -1,6 +1,6 @@
 export AWS_ACCESS_KEY_ID ?= test
 export AWS_SECRET_ACCESS_KEY ?= test
-exit ACTIVATE_PRO=0
+export ACTIVATE_PRO=0
 SHELL := /bin/bash
 
 include .env
@@ -25,10 +25,14 @@ start:				## Start the LocalStack Pro container in the detached mode
 
 		# Start InfluxDB container and connect it to the localstack_network
 		docker run -d --network localstack_network --name influxdb \
-		  -e INFLUXDB_DB=mydb \
-		  -e INFLUXDB_ADMIN_USER=admin \
-		  -e INFLUXDB_ADMIN_PASSWORD=adminpassword \
-		  -p 8086:8086 influxdb:latest
+		  -e DOCKER_INFLUXDB_INIT_USERNAME=admin \
+		  -e DOCKER_INFLUXDB_INIT_PASSWORD=adminpassword \
+		  -e DOCKER_INFLUXDB_INIT_ORG=myorg \
+		  -e DOCKER_INFLUXDB_INIT_BUCKET=mydb \
+		  -e DOCKER_INFLUXDB_INIT_MODE=setup \
+		  -e DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=my-super-secret-auth-token \
+		  -p 8086:8086 \
+		  influxdb:2
 
 		# Start Grafana container and connect it to the localstack_network
 		docker run -d --network localstack_network --name grafana \
@@ -42,6 +46,7 @@ start:				## Start the LocalStack Pro container in the detached mode
 		# Wait for the services to initialize (optional, you can increase sleep time if necessary)
 		echo "Waiting for services to start..."
 		sleep 15
+		curl -X POST "http://localhost:3000/api/datasources"   -H "Authorization: Basic YWRtaW46YWRtaW4="   -H "Content-Type: application/json"   --data-binary @exported_datasources/influxdb_datasource.json
 
 		echo "LocalStack, InfluxDB, and Grafana are now running."
 		echo "Grafana is available at http://localhost:3000"
