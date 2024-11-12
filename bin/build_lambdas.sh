@@ -2,28 +2,19 @@
 
 (cd lambdas/presign; rm -f lambda.zip; zip lambda.zip handler.py)
 (cd lambdas/list; rm -f lambda.zip; zip lambda.zip handler.py)
-
-os=$(uname -s)
-if [ "$os" == "Darwin" ]; then
-    (
-        cd lambdas/transform
-        rm -rf libs lambda.zip
-        docker run --platform linux/x86_64 --rm -v "$PWD":/var/task "public.ecr.aws/sam/build-python3.11" /bin/sh -c "pip3 install -r requirements.txt -t libs; exit"
-
-        cd libs && zip -r ../lambda.zip . && cd ..
-        zip lambda.zip handler.py
-        zip lambda.zip subroutines_config.json
-        rm -rf libs
-    )
-else
-    (
-        cd lambdas/transform
-        rm -rf package lambda.zip
-        mkdir package
-        pip3 install -r requirements.txt --platform manylinux2014_x86_64 --only-binary=:all: -t package
-        zip lambda.zip handler.py
-        zip lambda.zip subroutines_config.json
-        cd package
-        zip -r ../lambda.zip *;
-    )
-fi
+(
+cd lambdas/transform
+rm -rf package lambda.zip
+mkdir package
+pip3 install -r requirements.txt --platform manylinux2014_x86_64 --only-binary=:all: -t package
+cd package
+find . -name 'tests' -exec rm -rf {} \;
+find . -name 'doc' -exec rm -rf {} \;
+find . -name '*.rst' -exec rm -f {} \;
+find . -name "__pycache__" -exec rm -rf {} \;
+find . -name '*.pyc' -exec rm -rf {} \;
+zip  -r ../lambda.zip *  # Using -9 with recursive option here as well
+cd ../
+zip  lambda.zip handler.py
+zip  lambda.zip subroutines_config.json
+)

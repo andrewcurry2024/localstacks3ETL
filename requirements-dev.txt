@@ -13,3 +13,4 @@ terraform-local
 pytest-cov
 pytz
 pandas==1.5.3
+influxdb_client

@@ -6,6 +6,9 @@ from urllib.parse import unquote_plus
 from typing import List, Dict
 import json
 import pandas as pd
+from influxdb_client import InfluxDBClient, WriteOptions, Point, WritePrecision
+from influxdb_client.client.exceptions import InfluxDBError
+from influxdb_client.client.write_api import SYNCHRONOUS
 
 # Initialize S3 client
 endpoint_url = "https://localhost.localstack.cloud:4566"  # LocalStack URL
