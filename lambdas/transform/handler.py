@@ -26,8 +26,62 @@ class Logger:
     def debug(self, message):
         print(f"INFO: {message}")
 
-# Execution setup
 log = Logger()
+
+class Database:
+    def __init__(self):
+        self.token = "my-super-secret-auth-token"
+        self.org = "myorg"
+        self.bucket = "mydb"
+        self.url = "http://influxdb:8086"
+
+    def write(self, data, file):
+        """Write data to InfluxDB using batching with context management"""
+        try:
+            # Open the client and write_api in a 'with' statement to ensure proper management
+            with InfluxDBClient(url=self.url, token=self.token) as client:
+                # Set write options: batch size, flush interval, jitter, etc.
+                write_options = WriteOptions(batch_size=1000, flush_interval=100, jitter_interval=100)
+
+                # Use write_api within the context
+                with client.write_api(write_options=write_options) as write_api:
+                    # Loop through each record and write it to InfluxDB
+                    for record in data:
+                        # Prepare the record for writing
+                        if 'datetime' in record:
+                            record['_time'] = record.pop('datetime')
+                            if isinstance(record['_time'], str):
+                                record['_time'] = datetime.strptime(record['_time'], '%Y-%m-%dT%H:%M:%S')
+                            record['_time'] = record['_time'].replace(tzinfo=None)
+                            record['_time'] = record['_time'].strftime('%Y-%m-%dT%H:%M:%SZ')
+
+                        point = Point(record['_measurement'])
+
+                        # Add tags and fields dynamically
+                        if "customer" in record:
+                            point.tag("customer", record["customer"])
+                        if "server" in record:
+                            point.tag("server", record["server"])
+
+                        for field, value in record.items():
+                            if field not in ['_measurement', 'customer', 'server', '_time']:
+                                point.field(field, value)
+
+                        point.time(record['_time'], WritePrecision.S)
+
+                        # Write the point to InfluxDB asynchronously (handled by batching)
+                        print(f"Writing record for {file}")
+                        write_api.write(bucket=self.bucket, org=self.org, record=point)
+
+                    # Flush data to ensure all points are written before closing
+                    write_api.flush()
+
+            print(f"All data for {file} successfully written to InfluxDB")
+        except Exception as e:
+            print(f"An unexpected error occurred while writing data for {file}: {e}")
+
+# Execution setup
+db = Database()
 
 # Load subroutines from the config file
 def load_subroutines_config(filepath: str) -> Dict:
@@ -126,10 +180,11 @@ def import_data(header, filename, customer, server, subroutine_key, file):
         filename_s3 = f"{customer}_{server}_{subroutine_key}_{uuid_tmp}.csv"
         tmp_file_path = os.path.join('/tmp', filename_new)
         df.to_csv(tmp_file_path, index=False)
-
         s3_key = f"to_ingest/{filename_s3}"
         print(f"My S3 {s3_key}")
         print(f"My tmp {filename_new}")
+        records = df.to_dict(orient="records")
+        db.write(records,s3_key)  # Send to InfluxD
         s3.upload_file(tmp_file_path, get_raw_bucket_name(), s3_key)
         print(f"Hopefully uploaded {filename_new} to s3://{get_raw_bucket_name()}/{s3_key}")
 

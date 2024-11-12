@@ -1,5 +1,6 @@
 # Byte-compiled / optimized / DLL files
 __pycache__/
+lambdas/transform/package/
 *.py[cod]
 *$py.class
 *.zip
