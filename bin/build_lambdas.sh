@@ -12,6 +12,7 @@ if [ "$os" == "Darwin" ]; then
 
         cd libs && zip -r ../lambda.zip . && cd ..
         zip lambda.zip handler.py
+        zip lambda.zip subroutines_config.json
         rm -rf libs
     )
 else
@@ -21,6 +22,7 @@ else
         mkdir package
         pip3 install -r requirements.txt --platform manylinux2014_x86_64 --only-binary=:all: -t package
         zip lambda.zip handler.py
+        zip lambda.zip subroutines_config.json
         cd package
         zip -r ../lambda.zip *;
     )

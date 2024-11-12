@@ -1,6 +1,7 @@
 export AWS_ACCESS_KEY_ID ?= test
 export AWS_SECRET_ACCESS_KEY ?= test
 export ACTIVATE_PRO=0
+export AWS_DEFAULT_REGION=us-east-1
 SHELL := /bin/bash
 
 include .env
@@ -72,5 +73,8 @@ full:				## Stop the LocalStack Pro container
 repost:		# repost website stuff (saves reloading)	
 		awslocal s3 sync --delete ./website s3://webapp
 		awslocal s3 website s3://webapp --index-document index.html
+lambda:		
+		./bin/build_lambdas.sh
+		awslocal lambda update-function-code   --function-name transform   --zip-file fileb://lambdas/transform/lambda.zip
 
 .PHONY: usage install build awslocal-setup terraform-destroy start stop full clean repost

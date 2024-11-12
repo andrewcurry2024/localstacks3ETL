@@ -59,10 +59,28 @@ awslocal lambda wait function-active-v2 --function-name transform
 awslocal lambda put-function-event-invoke-config --function-name transform --maximum-event-age-in-seconds 3600 --maximum-retry-attempts 0
 
 fn_transform_arn=$(awslocal lambda get-function --function-name transform --output json | jq -r .Configuration.FunctionArn)
+#awslocal s3api put-bucket-notification-configuration \
+#    --bucket localstack-s3etl-app-raw \
+#    --notification-configuration "{\"LambdaFunctionConfigurations\": [{\"LambdaFunctionArn\": \"$fn_transform_arn\", \"Events\": [\"s3:ObjectCreated:*\"]}]}"
+
 awslocal s3api put-bucket-notification-configuration \
     --bucket localstack-s3etl-app-raw \
-    --notification-configuration "{\"LambdaFunctionConfigurations\": [{\"LambdaFunctionArn\": \"$fn_transform_arn\", \"Events\": [\"s3:ObjectCreated:*\"]}]}"
-
+    --notification-configuration '{
+        "LambdaFunctionConfigurations": [{
+            "LambdaFunctionArn": "'"$fn_transform_arn"'",
+            "Events": ["s3:ObjectCreated:*"],
+            "Filter": {
+                "Key": {
+                    "FilterRules": [
+                        {
+                            "Name": "suffix",
+                            "Value": ".tar"
+                        }
+                    ]
+                }
+            }
+        }]
+    }'
 awslocal s3 mb s3://webapp
 awslocal s3 sync --delete ./website s3://webapp
 awslocal s3 website s3://webapp --index-document index.html

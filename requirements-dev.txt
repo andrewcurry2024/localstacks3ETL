@@ -12,4 +12,4 @@ awscli-local
 terraform-local
 pytest-cov
 pytz
-pandas
+pandas==1.5.3
