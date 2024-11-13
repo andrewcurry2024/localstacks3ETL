@@ -130,24 +130,93 @@
             alert("Please set the function URL of the list Lambda");
             return;
         }
+$.ajax({
+    url: listUrl,
+    success: function (response) {
+        $('#imagesContainer').empty(); // Empty imagesContainer
 
-        $.ajax({
-            url: listUrl,
-            success: function (response) {
-                $('#imagesContainer').empty(); // Empty imagesContainer
-                response.forEach(function (item) {
-                    console.log(item);
-                    let cardHtml = imageItemTemplate(item);
-                    $("#imagesContainer").append(cardHtml);
-                });
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
-                console.log("Error:", textStatus, errorThrown);
-                alert("error! check the logs 2");
+        // Start the Raw files table
+        let tableHtml = `
+            <div class="section">
+                <h3>Raw Files</h3>
+                <table class="file-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Size</th>
+                            <th>Timestamp</th>
+                            <th>URL</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+        `;
+
+        // Iterate through the response and generate rows for the Raw files
+        response.forEach(function (item) {
+            if (item.Raw) {  // Only add rows for items that have Raw data
+                tableHtml += `
+                    <tr>
+                        <td>${item.Raw.Name}</td>
+                        <td>${item.Raw.Original.Size} bytes</td>
+                        <td>${item.Raw.Timestamp}</td>
+                        <td><a href="${item.Raw.Original.URL}" target="_blank">Download</a></td>
+                    </tr>
+                `;
             }
         });
-    }
 
+        tableHtml += `
+                    </tbody>
+                </table>
+            </div>
+        `;
+
+        // Now add the Processed files section
+        tableHtml += `
+            <div class="section">
+                <h3>Processed Files</h3>
+                <table class="file-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Size</th>
+                            <th>Timestamp</th>
+                            <th>URL</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+        `;
+
+        // Iterate through the response and generate rows for the Processed files
+        response.forEach(function (item) {
+            if (item.Processed) {  // Only add rows for items that have Processed data
+                tableHtml += `
+                    <tr>
+                        <td>${item.Processed.Name}</td>
+                        <td>${item.Processed.Size} bytes</td>
+                        <td>${item.Processed.Timestamp}</td>
+                        <td><a href="${item.Processed.URL}" target="_blank">Download</a></td>
+                    </tr>
+                `;
+            }
+        });
+
+        tableHtml += `
+                    </tbody>
+                </table>
+            </div>
+        `;
+
+        // Append the tables to the container
+        $('#imagesContainer').append(tableHtml);
+    },
+    error: function (jqXHR, textStatus, errorThrown) {
+        console.log("Error:", textStatus, errorThrown);
+        alert("error! check the logs 2");
+    }
+});
+
+    }
     // Trigger image list update when the button is clicked
     $("#updateImageListButton").click(function (event) {
         updateImageList();

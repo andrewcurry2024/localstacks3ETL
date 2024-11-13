@@ -14,7 +14,7 @@ from influxdb_client.client.write_api import SYNCHRONOUS
 endpoint_url = "https://localhost.localstack.cloud:4566"  # LocalStack URL
 s3 = boto3.client("s3", endpoint_url=endpoint_url)
 
-def get_bucket_name() -> str:
+def get_processed_bucket_name() -> str:
     return "localstack-s3etl-app-processed"
 
 def get_raw_bucket_name() -> str:
@@ -83,6 +83,39 @@ class Database:
 # Execution setup
 db = Database()
 
+def move_s3_object(source_bucket: str, destination_bucket: str, object_key: str, destination_key: str = None):
+    """
+    Moves an object from one S3 bucket to another by copying it to the destination and deleting it from the source.
+    
+    Args:
+        source_bucket (str): The name of the source S3 bucket.
+        destination_bucket (str): The name of the destination S3 bucket.
+        object_key (str): The key (path) of the object in the source bucket.
+        destination_key (str, optional): The key (path) for the object in the destination bucket.
+                                         If not provided, will use the same key as in the source.
+    """
+    if destination_key is None:
+        destination_key = object_key
+
+    try:
+        # Copy the object to the destination bucket
+        s3.copy_object(
+            CopySource={'Bucket': source_bucket, 'Key': object_key},
+            Bucket=destination_bucket,
+            Key=destination_key
+        )
+        print(f"Copied {object_key} to s3://{destination_bucket}/{destination_key}")
+
+        # Delete the object from the source bucket
+        s3.delete_object(Bucket=source_bucket, Key=object_key)
+        print(f"Deleted {object_key} from s3://{source_bucket}/{object_key}")
+        
+        print(f"Successfully moved {object_key} from {source_bucket} to {destination_bucket}")
+
+    except Exception as e:
+        print(f"Error moving {object_key} from {source_bucket} to {destination_bucket}: {e}")
+
+
 # Load subroutines from the config file
 def load_subroutines_config(filepath: str) -> Dict:
     try:
@@ -121,6 +154,8 @@ def extract_and_create_structure(tar_file_path: str, extracted_dir_path: str, fi
             s3.upload_file(extracted_file_path, get_raw_bucket_name(), s3_key)
 
             produce_import_files(subroutine_config, get_raw_bucket_name(), extracted_file_path, file_name, log)
+            
+            move_s3_object(get_raw_bucket_name(), get_processed_bucket_name(), s3_key)
 
             print(f"Successfully uploaded {file_name} to s3://{get_raw_bucket_name()}/{s3_key}")
 
@@ -181,12 +216,13 @@ def import_data(header, filename, customer, server, subroutine_key, file):
         tmp_file_path = os.path.join('/tmp', filename_new)
         df.to_csv(tmp_file_path, index=False)
         s3_key = f"to_ingest/{filename_s3}"
+        s3.upload_file(tmp_file_path, get_raw_bucket_name(), s3_key)
         print(f"My S3 {s3_key}")
         print(f"My tmp {filename_new}")
         records = df.to_dict(orient="records")
         db.write(records,s3_key)  # Send to InfluxD
-        s3.upload_file(tmp_file_path, get_raw_bucket_name(), s3_key)
-        print(f"Hopefully uploaded {filename_new} to s3://{get_raw_bucket_name()}/{s3_key}")
+        move_s3_object(get_raw_bucket_name(), get_processed_bucket_name(), s3_key)
+        print(f"Hopefully uploaded {filename_new} to s3://{get_processed_bucket_name()}/{s3_key}")
 
     except Exception as e:
         print(f"ERROR: Failed to process {filename}: {e}")

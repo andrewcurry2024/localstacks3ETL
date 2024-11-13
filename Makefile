@@ -55,7 +55,7 @@ start:				## Start the LocalStack Pro container in the detached mode
 
 stop:				## Stop the LocalStack Pro container
 		# Stop and remove the containers
-		docker stop localstack influxdb grafana || echo "One or more containers are not running."
+		docker stop localstack-main influxdb grafana || echo "One or more containers are not running."
 		docker rm localstack influxdb grafana || echo "One or more containers could not be removed."
 
 		# Optionally, remove the Docker network if it's no longer needed
@@ -66,14 +66,14 @@ stop:				## Stop the LocalStack Pro container
 clean:				## clean up everything
 		localstack stop
 		make stop
-		docker image prune -a --force
+		docker container prune --force
 		rm lambdas/*/lambda.zip
-full:				## Stop the LocalStack Pro container
+full:		## Full rebuild
 		make start install awslocal-setup
-repost:		# repost website stuff (saves reloading)	
+repost:		## repost website stuff (saves reloading)	
 		awslocal s3 sync --delete ./website s3://webapp
 		awslocal s3 website s3://webapp --index-document index.html
-lambda:		
+lambda:		## refesh lambda only
 		./bin/build_lambdas.sh
 		awslocal lambda update-function-code   --function-name transform   --zip-file fileb://lambdas/transform/lambda.zip
 

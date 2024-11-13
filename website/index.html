@@ -13,6 +13,79 @@
   <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
 </head>
   <style>
+    }#imagesContainer {
+    padding: 16px;
+}
+
+.section {
+    margin-bottom: 32px;
+}
+
+.section h3 {
+    font-size: 1.5em;
+    margin-bottom: 10px;
+}
+
+.file-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.file-table th, .file-table td {
+    padding: 8px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+.file-table th {
+    background-color: #f4f4f4;
+    font-weight: bold;
+}
+
+.file-table td a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.file-table td a:hover {
+    text-decoration: underline;
+}
+#imagesContainer {
+    display: flex;
+    flex-wrap: wrap;  /* Allow wrapping of file cards */
+    gap: 16px;
+}
+
+.file-card {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);  /* Create 3 equal columns */
+    gap: 8px;
+    padding: 16px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    width: 100%;
+    max-width: 500px;  /* Limit the width of each file card */
+}
+
+.file-column {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.file-column a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.file-column a:hover {
+    text-decoration: underline;
+}
+
+strong {
+    font-weight: bold;
+}
     /* General page background and font styles */
     body {
       background-color: #f8f9fa; /* Light background */
