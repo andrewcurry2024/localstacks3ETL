@@ -38,7 +38,7 @@ start:				## Start the LocalStack Pro container in the detached mode
 		# Start Grafana container and connect it to the localstack_network
 		docker run -d --network localstack_network --name grafana \
 		  -e GF_SECURITY_ADMIN_PASSWORD=admin \
-		  -p 3000:3000 grafana/grafana:latest
+		  -p 3000:3000 grafana/grafana:main
 
 		echo "Starting LocalStack with provided AUTH_TOKEN..."
 		@LOCALSTACK_AUTH_TOKEN=$(LOCALSTACK_AUTH_TOKEN) localstack start --network localstack_network -d
