@@ -48,6 +48,7 @@ start:				## Start the LocalStack Pro container in the detached mode
 		echo "Waiting for services to start..."
 		sleep 15
 		curl -X POST "http://localhost:3000/api/datasources"   -H "Authorization: Basic YWRtaW46YWRtaW4="   -H "Content-Type: application/json"   --data-binary @exported_datasources/influxdb_datasource.json
+		cat deployment/grafana/dashboard.json | jq '. * {overwrite: true, dashboard: {id: null, title: "My Dashboard Title"}}' | curl -X POST "http://localhost:3000/api/dashboards/db" -H "Authorization: Basic YWRtaW46YWRtaW4=" -H "Content-Type: application/json" -d @-
 
 		echo "LocalStack, InfluxDB, and Grafana are now running."
 		echo "Grafana is available at http://localhost:3000"
