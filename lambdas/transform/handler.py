@@ -227,6 +227,44 @@ def import_data(header, filename, customer, server, subroutine_key, file):
     except Exception as e:
         print(f"ERROR: Failed to process {filename}: {e}")
 
+def import_data_onstat_l(header, filename, customer, server, subroutine_key, file):
+    try:
+        records = []
+        column_names = ['date', 'time', 'epoch', 'pbuffer', 'pbufused', 'pbufsize', 'ppct_io', 'lbuffer', 'lbufused', 'lbufsize', 'physused']
+
+# Load the CSV file with custom headers
+        df = pd.read_csv(
+            filename,
+            names=column_names,  # Use custom column names
+            header=0,  # The first row will be skipped (since you are providing column names)
+            encoding='utf-8',  # Ensure the encoding is correct
+            skip_blank_lines=True,  # Skip blank lines if any
+            on_bad_lines='skip',  # Skip any problematic lines
+            delimiter=','  # Specify comma as delimiter
+        )
+        
+        df.columns = df.columns.str.strip()
+        df = clean_data(df, header, customer, server, subroutine_key)
+        print(f"DataFrame for {filename} with header: {header}")
+        print(df)
+        uuid_tmp=uuid.uuid4()
+        # Create a dynamic filename
+        filename_new = f"{customer}_{server}_{subroutine_key}_{uuid_tmp}.csv"
+        filename_s3 = f"{customer}_{server}_{subroutine_key}_{uuid_tmp}.csv"
+        tmp_file_path = os.path.join('/tmp', filename_new)
+        df.to_csv(tmp_file_path, index=False)
+        s3_key = f"to_ingest/{filename_s3}"
+        s3.upload_file(tmp_file_path, get_raw_bucket_name(), s3_key)
+        print(f"My S3 {s3_key}")
+        print(f"My tmp {filename_new}")
+        records = df.to_dict(orient="records")
+        db.write(records,s3_key)  # Send to InfluxD
+        move_s3_object(get_raw_bucket_name(), get_processed_bucket_name(), s3_key)
+        print(f"Hopefully uploaded {filename_new} to s3://{get_processed_bucket_name()}/{s3_key}")
+
+    except Exception as e:
+        print(f"ERROR: Failed to process {filename}: {e}")
+
 def produce_import_files(subroutine_config, bucket_name, extracted_file_path, file_name, log):
     """
     Process a file from S3 after it has been uploaded.
