@@ -62,6 +62,8 @@ class Database:
                             point.tag("customer", record["customer"])
                         if "server" in record:
                             point.tag("server", record["server"])
+                        if "digits" in record:
+                            point.tag("pagesize", record["digits"])
 
                         for field, value in record.items():
                             if field not in ['_measurement', 'customer', 'server', '_time']:
@@ -196,7 +198,7 @@ def clean_data(df: pd.DataFrame, header: str, customer: str, server: str, sub_ke
     df.loc[:, 'customer'] = customer
     df.loc[:, 'server'] = server
     df.loc[:, '_measurement'] = sub_key
-    df.loc[:, 'tag_1'] = digits
+    df.loc[:, 'digits'] = digits
 
     print(f"Cleaned Data Overview for {customer}-{server}:")
     print(df.info())
@@ -213,7 +215,7 @@ def import_data(header, filename, customer, server, subroutine_key, file, digits
         uuid_tmp=uuid.uuid4()
         # Create a dynamic filename
         filename_new = f"{customer}_{server}_{subroutine_key}_{uuid_tmp}.csv"
-        filename_s3 = f"{customer}_{server}_{subroutine_key}_{uuid_tmp}.csv"
+        filename_s3 = f"{customer}_{server}_{subroutine_key}_{uuid_tmp}_{digits}.csv"
         tmp_file_path = os.path.join('/tmp', filename_new)
         df.to_csv(tmp_file_path, index=False)
         s3_key = f"to_ingest/{filename_s3}"
@@ -293,13 +295,13 @@ def produce_import_files(subroutine_config, bucket_name, extracted_file_path, fi
 
             if match:
                 # Save the digits into a separate variable
-                digits = match.group(1)
+                digits = int(match.group(1))
     
                 # Modify the subroutine_key to remove the digits but keep '_k'
                 subroutine_key = re.sub(r"_\d+k", "_k", subroutine_key)
             else:
                 # Set digits to None if no match is found
-                digits = None
+                digits = 0
 
             # Check if subroutine exists and call it
             if subroutine_key in subroutine_config:

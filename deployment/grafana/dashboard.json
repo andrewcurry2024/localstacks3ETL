@@ -3676,7 +3676,8 @@
     },
     {
       "datasource": {
-        "uid": "InfluxDB"
+        "type": "influxdb",
+        "uid": "de3b5waz100lcf"
       },
       "fieldConfig": {
         "defaults": {
@@ -3788,7 +3789,7 @@
               "type": "fill"
             }
           ],
-          "measurement": "network_stats",
+          "measurement": "onstat-g_ntu",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "A",
@@ -3851,13 +3852,13 @@
           ],
           "tags": [
             {
-              "key": "customer",
+              "key": "customer::tag",
               "operator": "=~",
               "value": "/^$customer_name$/"
             },
             {
               "condition": "AND",
-              "key": "machine",
+              "key": "server::tag",
               "operator": "=~",
               "value": "/^$Machine$/"
             }
@@ -3945,7 +3946,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "buffers.buff waits"
+              "options": "buffer_k.buff writes  since CP"
             },
             "properties": [
               {
@@ -3967,25 +3968,16 @@
             ]
           },
           {
-            "__systemRef": "hideSeriesFrom",
             "matcher": {
-              "id": "byNames",
-              "options": {
-                "mode": "exclude",
-                "names": [
-                  "buffer_k.buff waits_1"
-                ],
-                "prefix": "All except:",
-                "readOnly": true
-              }
+              "id": "byName",
+              "options": "buffer_k.buffer writes since checkpoint"
             },
             "properties": [
               {
-                "id": "custom.hideFrom",
+                "id": "color",
                 "value": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": true
+                  "fixedColor": "super-light-red",
+                  "mode": "fixed"
                 }
               }
             ]
@@ -4121,25 +4113,7 @@
               },
               {
                 "params": [
-                  "buff writes since checkpoint"
-                ],
-                "type": "alias"
-              }
-            ],
-            [
-              {
-                "params": [
-                  "bufwrits"
-                ],
-                "type": "field"
-              },
-              {
-                "params": [],
-                "type": "mean"
-              },
-              {
-                "params": [
-                  "buff waits_1"
+                  "buff writes  since CP"
                 ],
                 "type": "alias"
               }
@@ -4159,9 +4133,9 @@
             },
             {
               "condition": "AND",
-              "key": "bufwrits::field",
-              "operator": ">=",
-              "value": "0"
+              "key": "pagesize::tag",
+              "operator": "=",
+              "value": "/^$page_size$/"
             }
           ]
         }
@@ -4171,7 +4145,8 @@
     },
     {
       "datasource": {
-        "uid": "InfluxDB"
+        "type": "influxdb",
+        "uid": "de3b5waz100lcf"
       },
       "description": "",
       "fieldConfig": {
@@ -4298,7 +4273,7 @@
             }
           ],
           "hide": false,
-          "measurement": "buffers",
+          "measurement": "buffer_k",
           "orderByTime": "ASC",
           "policy": "default",
           "query": "SELECT difference(mean(\"bufreads\")) AS \"buff reads\" FROM \"default\".\"buffers\" WHERE (\"customer\" =~ /^$customer_name$/ AND \"machine\" =~ /^$Machine$/ AND \"tag_1\" = 'select tag value') AND $timeFilter GROUP BY time($__interval), \"tag_1\" fill(none)",
@@ -4397,19 +4372,19 @@
           ],
           "tags": [
             {
-              "key": "customer",
+              "key": "customer::tag",
               "operator": "=~",
               "value": "/^$customer_name$/"
             },
             {
               "condition": "AND",
-              "key": "machine",
+              "key": "server::tag",
               "operator": "=~",
               "value": "/^$Machine$/"
             },
             {
               "condition": "AND",
-              "key": "tag_1",
+              "key": "pagesize::tag",
               "operator": "=~",
               "value": "/^$page_size$/"
             }
@@ -4421,7 +4396,8 @@
     },
     {
       "datasource": {
-        "uid": "InfluxDB"
+        "type": "influxdb",
+        "uid": "de3b5waz100lcf"
       },
       "description": "",
       "fieldConfig": {
@@ -4584,7 +4560,7 @@
             }
           ],
           "hide": false,
-          "measurement": "buffers",
+          "measurement": "buffer_k",
           "orderByTime": "ASC",
           "policy": "default",
           "query": "SELECT difference(mean(\"bufreads\")) AS \"buff reads\" FROM \"default\".\"buffers\" WHERE (\"customer\" =~ /^$customer_name$/ AND \"machine\" =~ /^$Machine$/ AND \"tag_1\" = 'select tag value') AND $timeFilter GROUP BY time($__interval), \"tag_1\" fill(none)",
@@ -4719,19 +4695,19 @@
           ],
           "tags": [
             {
-              "key": "customer",
+              "key": "customer::tag",
               "operator": "=~",
               "value": "/^$customer_name$/"
             },
             {
               "condition": "AND",
-              "key": "machine",
+              "key": "server::tag",
               "operator": "=~",
               "value": "/^$Machine$/"
             },
             {
               "condition": "AND",
-              "key": "tag_1",
+              "key": "pagesize::tag",
               "operator": "=~",
               "value": "/^$page_size$/"
             }
@@ -4743,7 +4719,8 @@
     },
     {
       "datasource": {
-        "uid": "InfluxDB"
+        "type": "influxdb",
+        "uid": "de3b5waz100lcf"
       },
       "fieldConfig": {
         "defaults": {
@@ -4948,13 +4925,13 @@
           ],
           "tags": [
             {
-              "key": "customer",
+              "key": "customer::tag",
               "operator": "=~",
               "value": "/^$customer_name$/"
             },
             {
               "condition": "AND",
-              "key": "machine",
+              "key": "server::tag",
               "operator": "=~",
               "value": "/^$Machine$/"
             }
@@ -4979,7 +4956,8 @@
     },
     {
       "datasource": {
-        "uid": "InfluxDB"
+        "type": "influxdb",
+        "uid": "de3b5waz100lcf"
       },
       "fieldConfig": {
         "defaults": {
@@ -5077,7 +5055,7 @@
               "type": "fill"
             }
           ],
-          "measurement": "lru_stats",
+          "measurement": "lru_k",
           "orderByTime": "ASC",
           "policy": "default",
           "query": "SELECT mean(\"dirtypctnow\") FROM \"default\".\"lru_stats\" WHERE (\"tag_1\" =~ /^$page_size$/) AND $timeFilter GROUP BY time($__interval) fill(null)",
@@ -5142,19 +5120,19 @@
           ],
           "tags": [
             {
-              "key": "tag_1",
+              "key": "pagesize::tag",
               "operator": "=~",
               "value": "/^$page_size$/"
             },
             {
               "condition": "AND",
-              "key": "customer",
+              "key": "customer::tag",
               "operator": "=~",
               "value": "/^$customer_name$/"
             },
             {
               "condition": "AND",
-              "key": "machine",
+              "key": "server::tag",
               "operator": "=~",
               "value": "/^$Machine$/"
             }
@@ -5351,9 +5329,15 @@
     ]
   },
   "time": {
-    "from": "2024-10-10T12:41:45.772Z",
-    "to": "2024-10-10T12:43:42.816Z"
-  }
+    "from": "2024-10-10T11:05:29.757Z",
+    "to": "2024-10-10T13:27:47.384Z"
+  },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "My Dashboard Title",
+  "uid": "your-dashboard-uid",
+  "version": 8,
+  "weekStart": ""
 },
   "timepicker": {},
   "timezone": "",
