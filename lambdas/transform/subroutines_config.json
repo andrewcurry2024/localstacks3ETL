@@ -147,7 +147,7 @@
         "SUB": "import_partitions",
         "VALUES": {
             "IMPORT": [
-                ["partition_summary", "datetime,npages,nused,npdata,nrows,flgs,seqsc,lkrqs,lkwts,ucnt,touts,isrd,iswrt,isrwt,isdel,dlks,bfrd,bfwrt,nextns,area"]
+                ["partition_summary", "datetime,partnum,npages,nused,npdata,nrows,flgs,seqsc,lkrqs,lkwts,ucnt,touts,isrd,iswrt,isrwt,isdel,dlks,bfrd,bfwrt,nextns,area"]
             ]
         }
     },

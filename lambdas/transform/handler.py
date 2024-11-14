@@ -238,8 +238,8 @@ def import_partitions(header, filename, customer, server, subroutine_key, file, 
     try:
         records = []
         columns = [
-            "datetime", "npages", "nused", "npdata", "nrows", "flgs", "seqsc", "lkrqs", "lkwts",
-            "ucnt", "touts", "isrd", "iswrt", "isrwt", "isdel", "dlks", "bfrd", "bfwrt", "area"
+            "date","time","partnum", "npages", "nused", "npdata", "nrows", "flgs", "seqsc", "lkrqs", "lkwts",
+            "ucnt", "touts", "isrd", "iswrt", "isrwt", "isdel", "dlks", "bfrd", "bfwrt", "nextns", "area"
         ]
 
         # Load the file with specified columns
@@ -247,14 +247,12 @@ def import_partitions(header, filename, customer, server, subroutine_key, file, 
             filename,
             header=None,
             names=columns,
-            parse_dates={"datetime": [0, 1]},  # Combine the first two columns as datetime
-            date_parser=lambda x: pd.to_datetime(x, format='%Y-%m-%d %H:%M:%S'),
             sep=","
         )
         df.columns = df.columns.str.strip()
+        print(df)
         df = clean_data(df, header, customer, server, subroutine_key,digits)
         print(f"DataFrame for {filename} with header: {header}")
-        print(df)
         uuid_tmp=uuid.uuid4()
         # Create a dynamic filename
         filename_new = f"{customer}_{server}_{subroutine_key}_{uuid_tmp}.csv"
