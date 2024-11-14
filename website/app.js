@@ -154,8 +154,19 @@ $.ajax({
         // Iterate through the response and generate rows for the Raw files
         response.forEach(function (item) {
             if (item.Raw) {  // Only add rows for items that have Raw data
+                let rowClass = '';  // Default class
+
+                // Determine the row class based on the category of the file
+                if (item.Raw.Name.includes('to_ingest')) {
+                    rowClass = 'to-ingest';  
+                } else if (item.Raw.Name.includes('extracted')) {
+                    rowClass = 'extracted'; 
+                } else if (item.Raw.Name.includes('error')) {
+                    rowClass = 'error';  
+                }
+
                 tableHtml += `
-                    <tr>
+                    <tr class="${rowClass}">
                         <td>${item.Raw.Name}</td>
                         <td>${item.Raw.Original.Size} bytes</td>
                         <td>${item.Raw.Timestamp}</td>
@@ -165,13 +176,14 @@ $.ajax({
             }
         });
 
+        // Close the Raw files table
         tableHtml += `
                     </tbody>
                 </table>
             </div>
         `;
 
-        // Now add the Processed files section
+        // Start the Processed files table
         tableHtml += `
             <div class="section">
                 <h3>Processed Files</h3>
@@ -190,8 +202,20 @@ $.ajax({
         // Iterate through the response and generate rows for the Processed files
         response.forEach(function (item) {
             if (item.Processed) {  // Only add rows for items that have Processed data
+                let rowClass = '';  // Default class
+
+                // Determine the row class based on the category of the file
+                if (item.Processed.Name.includes('to_ingest')) {
+                    rowClass = 'to-ingest';  
+                } else if (item.Processed.Name.includes('extracted')) {
+                    rowClass = 'extracted';  
+                } else if (item.Processed.Name.includes('error')) {
+                    rowClass = 'error';  
+		}
+		
+
                 tableHtml += `
-                    <tr>
+                    <tr class="${rowClass}">
                         <td>${item.Processed.Name}</td>
                         <td>${item.Processed.Size} bytes</td>
                         <td>${item.Processed.Timestamp}</td>
@@ -201,6 +225,7 @@ $.ajax({
             }
         });
 
+        // Close the Processed files table
         tableHtml += `
                     </tbody>
                 </table>
@@ -212,7 +237,7 @@ $.ajax({
     },
     error: function (jqXHR, textStatus, errorThrown) {
         console.log("Error:", textStatus, errorThrown);
-        alert("error! check the logs 2");
+        alert("Error! Check the logs.");
     }
 });
 
