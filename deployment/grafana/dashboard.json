@@ -678,7 +678,8 @@
     },
     {
       "datasource": {
-        "uid": "InfluxDB"
+        "type": "influxdb",
+        "uid": "de3b5waz100lcf"
       },
       "description": "",
       "fieldConfig": {
@@ -731,7 +732,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "cpu"
+              "options": "Time"
             },
             "properties": [
               {
@@ -746,7 +747,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "cpu"
+              "options": "{{metric}}::{{tag}}"
             },
             "properties": [
               {
@@ -768,8 +769,8 @@
               {
                 "id": "custom.hideFrom",
                 "value": {
-                  "legend": true,
-                  "tooltip": true,
+                  "legend": false,
+                  "tooltip": false,
                   "viz": false
                 }
               }
@@ -824,7 +825,7 @@
       "pluginVersion": "11.4.0-207410",
       "targets": [
         {
-          "alias": "$tag_tag_1",
+          "alias": "$tag_metric",
           "datasource": {
             "uid": "InfluxDB"
           },
@@ -837,7 +838,7 @@
             },
             {
               "params": [
-                "tag_1"
+                "metric::tag"
               ],
               "type": "tag"
             },
@@ -850,7 +851,7 @@
           ],
           "hide": false,
           "limit": "",
-          "measurement": "server_usage",
+          "measurement": "openbet_cpu_by_app",
           "orderByTime": "ASC",
           "policy": "default",
           "query": "SELECT max(\"cores\") FROM \"default\".\"server_usage\" WHERE (\"customer\" =~ /^$customer_name$/ AND \"machine\" =~ /^$Machine$/) AND metric !~/TOTAL/ AND $timeFilter GROUP BY time($__interval), \"tag_1\" fill(none)",
@@ -873,19 +874,19 @@
           ],
           "tags": [
             {
-              "key": "customer",
+              "key": "customer::tag",
               "operator": "=~",
               "value": "/^$customer_name$/"
             },
             {
               "condition": "AND",
-              "key": "machine",
+              "key": "server::tag",
               "operator": "=~",
               "value": "/^$Machine$/"
             },
             {
               "condition": "AND",
-              "key": "tag_1",
+              "key": "metric::tag",
               "operator": "!=",
               "value": "TOTAL"
             }
@@ -941,7 +942,8 @@
     },
     {
       "datasource": {
-        "uid": "InfluxDB"
+        "type": "influxdb",
+        "uid": "de3b5waz100lcf"
       },
       "description": "",
       "fieldConfig": {
@@ -1100,7 +1102,7 @@
       "pluginVersion": "11.4.0-207410",
       "targets": [
         {
-          "alias": "$tag_tag_1",
+          "alias": "$tag_metric",
           "datasource": {
             "uid": "InfluxDB"
           },
@@ -1113,7 +1115,7 @@
             },
             {
               "params": [
-                "tag_1"
+                "metric::tag"
               ],
               "type": "tag"
             },
@@ -1126,7 +1128,7 @@
           ],
           "hide": false,
           "limit": "",
-          "measurement": "server_usage",
+          "measurement": "openbet_cpu_by_app",
           "orderByTime": "ASC",
           "policy": "default",
           "query": "SELECT max(\"cores\") FROM \"default\".\"server_usage\" WHERE (\"customer\" =~ /^$customer_name$/ AND \"machine\" =~ /^$Machine$/) AND metric !~/TOTAL/ AND $timeFilter GROUP BY time($__interval), \"tag_1\" fill(none)",
@@ -1149,19 +1151,19 @@
           ],
           "tags": [
             {
-              "key": "customer",
+              "key": "customer::tag",
               "operator": "=~",
               "value": "/^$customer_name$/"
             },
             {
               "condition": "AND",
-              "key": "machine",
+              "key": "server::tag",
               "operator": "=~",
               "value": "/^$Machine$/"
             },
             {
               "condition": "AND",
-              "key": "tag_1",
+              "key": "metric::tag",
               "operator": "!=",
               "value": "TOTAL"
             }
@@ -1671,8 +1673,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -1896,8 +1897,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -2099,8 +2099,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -2240,8 +2239,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -2417,8 +2415,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -2622,8 +2619,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -2833,8 +2829,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -3103,8 +3098,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -3361,8 +3355,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -3723,8 +3716,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -3932,8 +3924,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -4193,8 +4184,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -4444,8 +4434,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -4766,8 +4755,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -5003,8 +4991,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -5331,13 +5318,7 @@
   "time": {
     "from": "2024-10-10T11:05:29.757Z",
     "to": "2024-10-10T13:27:47.384Z"
-  },
-  "timepicker": {},
-  "timezone": "browser",
-  "title": "My Dashboard Title",
-  "uid": "your-dashboard-uid",
-  "version": 8,
-  "weekStart": ""
+  }
 },
   "timepicker": {},
   "timezone": "",
