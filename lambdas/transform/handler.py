@@ -66,6 +66,8 @@ class Database:
                             point.tag("pagesize", record["digits"])
                         if "name" in record:
                             point.tag("metric", record["name"])
+                        if "area" in record:
+                            point.tag("metric", record["area"])
 
                         for field, value in record.items():
                             if field not in ['_measurement', 'customer', 'server', '_time']:
@@ -232,6 +234,45 @@ def import_data(header, filename, customer, server, subroutine_key, file, digits
     except Exception as e:
         print(f"ERROR: Failed to process {filename}: {e}")
 
+def import_partitions(header, filename, customer, server, subroutine_key, file, digits):
+    try:
+        records = []
+        columns = [
+            "datetime", "npages", "nused", "npdata", "nrows", "flgs", "seqsc", "lkrqs", "lkwts",
+            "ucnt", "touts", "isrd", "iswrt", "isrwt", "isdel", "dlks", "bfrd", "bfwrt", "area"
+        ]
+
+        # Load the file with specified columns
+        df = pd.read_csv(
+            filename,
+            header=None,
+            names=columns,
+            parse_dates={"datetime": [0, 1]},  # Combine the first two columns as datetime
+            date_parser=lambda x: pd.to_datetime(x, format='%Y-%m-%d %H:%M:%S'),
+            sep=","
+        )
+        df.columns = df.columns.str.strip()
+        df = clean_data(df, header, customer, server, subroutine_key,digits)
+        print(f"DataFrame for {filename} with header: {header}")
+        print(df)
+        uuid_tmp=uuid.uuid4()
+        # Create a dynamic filename
+        filename_new = f"{customer}_{server}_{subroutine_key}_{uuid_tmp}.csv"
+        filename_s3 = f"{customer}_{server}_{subroutine_key}_{uuid_tmp}_{digits}.csv"
+        tmp_file_path = os.path.join('/tmp', filename_new)
+        df.to_csv(tmp_file_path, index=False)
+        s3_key = f"to_ingest/{filename_s3}"
+        s3.upload_file(tmp_file_path, get_raw_bucket_name(), s3_key)
+        print(f"My S3 {s3_key}")
+        print(f"My tmp {filename_new}")
+        records = df.to_dict(orient="records")
+        db.write(records,s3_key)  # Send to InfluxD
+        move_s3_object(get_raw_bucket_name(), get_processed_bucket_name(), s3_key)
+        print(f"Hopefully uploaded {filename_new} to s3://{get_processed_bucket_name()}/{s3_key}")
+
+    except Exception as e:
+        print(f"ERROR: Failed to process {filename}: {e}")
+
 def cpu_by_app(header, filename, customer, server, subroutine_key, file, digits):
     try:
         records = []
@@ -257,7 +298,7 @@ def cpu_by_app(header, filename, customer, server, subroutine_key, file, digits)
         df = pd.DataFrame(data)
 
         df.columns = df.columns.str.strip()
-        df = clean_data(df, header, customer, server, subroutine_key,digits)
+        df = clean_data(df, header, customer, server, 'cpu_by_app',digits)
         print(f"DataFrame for {filename} with header: {header}")
         print(df)
         uuid_tmp=uuid.uuid4()
