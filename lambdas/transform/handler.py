@@ -159,7 +159,7 @@ def extract_and_create_structure(tar_file_path: str, extracted_dir_path: str, fi
 
             print(f"Successfully uploaded {file_name} to s3://{get_raw_bucket_name()}/{s3_key}")
 
-def clean_data(df: pd.DataFrame, header: str, customer: str, server: str, sub_key: str) -> pd.DataFrame:
+def clean_data(df: pd.DataFrame, header: str, customer: str, server: str, sub_key: str, digits) -> pd.DataFrame:
     df = df.copy()
     for column in df.columns:
         if column not in ['datetime', 'customer', 'server']:
@@ -196,17 +196,18 @@ def clean_data(df: pd.DataFrame, header: str, customer: str, server: str, sub_ke
     df.loc[:, 'customer'] = customer
     df.loc[:, 'server'] = server
     df.loc[:, '_measurement'] = sub_key
+    df.loc[:, 'tag_1'] = digits
 
     print(f"Cleaned Data Overview for {customer}-{server}:")
     print(df.info())
     return df
 
-def import_data(header, filename, customer, server, subroutine_key, file):
+def import_data(header, filename, customer, server, subroutine_key, file, digits):
     try:
         records = []
         df = pd.read_csv(filename, header=0)
         df.columns = df.columns.str.strip()
-        df = clean_data(df, header, customer, server, subroutine_key)
+        df = clean_data(df, header, customer, server, subroutine_key,digits)
         print(f"DataFrame for {filename} with header: {header}")
         print(df)
         uuid_tmp=uuid.uuid4()
@@ -227,7 +228,7 @@ def import_data(header, filename, customer, server, subroutine_key, file):
     except Exception as e:
         print(f"ERROR: Failed to process {filename}: {e}")
 
-def import_data_onstat_l(header, filename, customer, server, subroutine_key, file):
+def import_data_onstat_l(header, filename, customer, server, subroutine_key, file, digits):
     try:
         records = []
         column_names = ['date', 'time', 'epoch', 'pbuffer', 'pbufused', 'pbufsize', 'ppct_io', 'lbuffer', 'lbufused', 'lbufsize', 'physused']
@@ -244,7 +245,7 @@ def import_data_onstat_l(header, filename, customer, server, subroutine_key, fil
         )
         
         df.columns = df.columns.str.strip()
-        df = clean_data(df, header, customer, server, subroutine_key)
+        df = clean_data(df, header, customer, server, subroutine_key, digits)
         print(f"DataFrame for {filename} with header: {header}")
         print(df)
         uuid_tmp=uuid.uuid4()
@@ -284,11 +285,21 @@ def produce_import_files(subroutine_config, bucket_name, extracted_file_path, fi
 
             # Modify the subroutine key as needed
             subroutine_key = re.sub(r"_for_graph", "", subroutine_key)
-            subroutine_key = re.sub(r"_\d+k", "_k", subroutine_key)
             subroutine_key = re.sub(r"_\d+$", "", subroutine_key)
             subroutine_key = re.sub(r"_\d+.log$", "", subroutine_key)
             subroutine_key = re.sub(r".log$", "", subroutine_key)
 
+            match = re.search(r"_(\d+)k", subroutine_key)
+
+            if match:
+                # Save the digits into a separate variable
+                digits = match.group(1)
+    
+                # Modify the subroutine_key to remove the digits but keep '_k'
+                subroutine_key = re.sub(r"_\d+k", "_k", subroutine_key)
+            else:
+                # Set digits to None if no match is found
+                digits = None
 
             # Check if subroutine exists and call it
             if subroutine_key in subroutine_config:
@@ -298,7 +309,7 @@ def produce_import_files(subroutine_config, bucket_name, extracted_file_path, fi
                 # Dynamically call the function using globals()
                 func = globals().get(func_name)
                 if func:
-                    func(header, extracted_file_path, customer, server, subroutine_key, file_name)
+                    func(header, extracted_file_path, customer, server, subroutine_key, file_name, digits)
                 else:
                     log.error(f"Function {func_name} not found.")
             else:
