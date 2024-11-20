@@ -1,0 +1,162 @@
+{
+    "bpm": {
+        "SUB": "import_data",
+        "VALUES": {
+            "IMPORT": [
+                ["bets_per_min", "datetime,bpm"]
+            ]
+        }
+    },
+    "checkpoints": {
+        "SUB": "import_data",
+        "VALUES": {
+            "IMPORT": [
+                ["checkpoint_info", "datetime,id,intvl,type,caller,clock_time,crit_time,flush_time,cp_time,n_dirty_buffs,plogs_per_sec,llogs_per_sec,dskflush_per_sec,ckpt_logid,ckpt_logpos,physused,logused,n_crit_waits,tot_crit_wait,longest_crit_wait,block_time"]
+            ]
+        }
+    },
+    "osmon_sum": {
+        "SUB": "import_data",
+        "VALUES": {
+            "IMPORT": [
+                ["osmon", "datetime,rmbs_tot,wmbs_tot,await_avg,pctutil_avg,await_hotcnt,await_hotavg,svctm_hotcnt,svctm_hotavg,pctutil_hotcnt,pctutil_hotavg,cpu_avg_busy,eth_rxbytpers,eth_txbytpers,eth_totMBpers"]
+            ]
+        }
+    },
+    "queues_summary": {
+        "SUB": "import_data",
+        "VALUES": {
+            "IMPORT": [
+                ["queue_summary", "datetime,act_avg,rea_avg,rea_rep_pct,mtx_avg,con_avg,lck_mtx_avg"]
+            ]
+        }
+    },
+    "onstat-u": {
+        "SUB": "import_data",
+        "VALUES": {
+            "IMPORT": [
+                ["thread_states", "datetime,write_to_logical_log,buffer_waits,checkpoint_waits,lock_waits,mutex_waits,transaction_waits,trans_cleanup,condition_waits,total,engine_status"]
+            ]
+        }
+    },
+    "replication": {
+        "SUB": "import_data",
+        "VALUES": {
+            "IMPORT": [
+                ["replication_info", "datetime,current_log,current_page,replication_server,ack_log,ack_page,app_log,app_page,backlog,type,Status"]
+            ]
+        }
+    },
+    "cpu_by_app": {
+        "SUB": "cpu_by_app",
+        "VALUES": {
+            "IMPORT": [
+                ["cpu_by_app", "datetime,name,cores,percentage"]
+            ]
+        }
+    },
+    "openbet_cpu_by_app": {
+        "SUB": "cpu_by_app",
+        "VALUES": {
+            "IMPORT": [
+                ["cpu_by_app", "datetime,name,cores,percentage"]
+            ]
+        }
+    },
+    "db_check_info": {
+        "SUB": "import_data",
+        "VALUES": {
+            "IMPORT": [
+                ["dbmonitor_alert", "datetime,text"]
+            ]
+        }
+    },
+    "total_locks": {
+        "SUB": "import_data",
+        "VALUES": {
+            "IMPORT": [
+                ["total_locks", "datetime,total_locks"]
+            ]
+        }
+    },
+    "onstat-g_ntu": {
+        "SUB": "import_data",
+        "VALUES": {
+            "IMPORT": [
+                ["network_stats", "datetime,connects,total_reads,total_writes"]
+            ]
+        }
+    },
+    "buffer_k": {
+        "SUB": "import_data",
+        "VALUES": {
+            "IMPORT": [
+                ["buffers", "datetime,ps,dskreads,pagreads,bufreads,per_read_cached,dskwrits,pagwrits,bufwrits,per_writecached,bufwrits_sinceckpt,bufwaits,ovbuff,flushes,Fg_Writes,LRU_Writes,Avg_LRU_Time,Chunk_Writes"]
+            ]
+        }
+    },
+    "buffer_fast": {
+        "SUB": "import_data",
+        "VALUES": {
+            "IMPORT": [
+                ["buffer_fast", "datetime,gets,hits,percent_hits,puts"]
+            ]
+        }
+    },
+    "lru_overall": {
+        "SUB": "import_data",
+        "VALUES": {
+            "IMPORT": [
+                ["lru_overall", "datetime,overall,dirtyGBtotal,tgtGBdirty,stopflushGB,state"]
+            ]
+        }
+    },
+    "vpcache": {
+        "SUB": "import_data",
+        "VALUES": {
+            "IMPORT": [
+                ["vpcache", "datetime,sizeMB"]
+            ]
+        }
+    },
+    "onstat-g_prc": {
+        "SUB": "import_data",
+        "VALUES": {
+            "IMPORT": [
+                ["prc_stats", "datetime,numlists,pc_poolsize,ref_cnt,dropped,udrentries,entriesinuse"]
+            ]
+        }
+    },
+    "lru_k": {
+        "SUB": "import_data",
+        "VALUES": {
+            "IMPORT": [
+                ["lru_stats", "datetime,bufsz,dirtynow,tgtpctdirty,dirtypctnow,dirtyGBnow,stopflushGB,state"]
+            ]
+        }
+    },
+    "onstat-l": {
+        "SUB": "import_data_onstat_l",
+        "VALUES": {
+            "IMPORT": [
+                ["onstat_l", "datetime,epoch,pbuffer,pbufused,pbufsize,pusedpct,lbuffer,lbufused"]
+            ]
+        }
+    },
+    "partition_summary": {
+        "SUB": "import_partitions",
+        "VALUES": {
+            "IMPORT": [
+                ["partition_summary", "datetime,partnum,npages,nused,npdata,nrows,flgs,seqsc,lkrqs,lkwts,ucnt,touts,isrd,iswrt,isrwt,isdel,dlks,bfrd,bfwrt,nextns,area"]
+            ]
+        }
+    },
+    "onstat-g_seg": {
+        "SUB": "import_data",
+        "VALUES": {
+            "IMPORT": [
+                ["onstat_g_seg", "datetime,segs,totalblks,usedbliks,pctused"]
+            ]
+        }
+    }
+}
