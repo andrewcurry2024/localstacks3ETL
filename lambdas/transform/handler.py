@@ -76,7 +76,7 @@ class Database:
                         point.time(record['_time'], WritePrecision.S)
 
                         # Write the point to InfluxDB asynchronously (handled by batching)
-                        print(f"Writing record for {file}")
+                        #print(f"Writing record for {file}")
                         write_api.write(bucket=self.bucket, org=self.org, record=point)
 
                     # Flush data to ensure all points are written before closing
@@ -147,6 +147,9 @@ def extract_and_create_structure(tar_file_path: str, extracted_dir_path: str, fi
 
         # Iterate through extracted files and upload to S3
         for file_name in extracted_files:
+            if file_name.startswith('._'):
+                    print(f"Skipping Apple Double file: {file_name}")
+                    continue
             extracted_file_path = os.path.join(extracted_dir_path, file_name)
 
             # Build the S3 key with the full directory structure
