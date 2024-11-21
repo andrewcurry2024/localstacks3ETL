@@ -48,6 +48,15 @@ jobs:
         run: |
           pip install -r requirements-dev.txt
 
+      - name: Start LocalStack
+        uses: LocalStack/setup-localstack@v0.2.3
+        with:
+          image-tag: 'latest'
+          install-awslocal: 'true'
+          skip-startup: 'true'
+        env:
+        LOCALSTACK_API_KEY: ${{ secrets.LOCALSTACK_API_KEY }}
+
       - name: Start LocalStack and Dependencies
         env:
           LOCALSTACK_AUTH_TOKEN: ${{ secrets.LOCALSTACK_API_KEY }}
