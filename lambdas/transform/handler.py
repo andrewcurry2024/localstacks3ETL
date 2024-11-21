@@ -1,5 +1,6 @@
 import os
 import uuid
+from datetime import datetime
 import boto3
 import re
 from urllib.parse import unquote_plus
@@ -35,16 +36,46 @@ class Database:
         self.bucket = "mydb"
         self.url = "http://influxdb:8086"
 
-    def write(self, data, file):
+
+    def write_summary_record(self, write_api, customer, server, filename):
+        try:
+            # Ensure that the data values are valid
+            if not customer or not server or not filename:
+                raise ValueError(f"Invalid data for summary: customer={customer}, server={server}, filename={filename}")
+        
+            # Get the current time in UTC and format it (same as your previous code)
+            current_time = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
+        
+            # Create the summary point
+            summary_point = (
+                Point("customer_server")  # Measurement name
+                .field("customer", customer)
+                .field("server", server)
+                .field("filename", filename)
+                .field("_time", current_time)
+                .field("datetime", current_time)
+            )
+        
+            print(f"Writing summary_point for customer={customer}, server={server}, filename={filename} at {current_time}")
+        
+            # Write the summary point to InfluxDB
+            write_api.write(bucket=self.bucket, org=self.org, record=summary_point)
+    
+        except Exception as e:
+            # Print the error with details for debugging
+            print(f"An unexpected error occurred while writing data for {filename} to customer_server: {customer}")
+            print(f"Error details: {str(e)}")
+
+    def write(self, data, file,customer,server):
         """Write data to InfluxDB using batching with context management"""
         try:
             # Open the client and write_api in a 'with' statement to ensure proper management
             with InfluxDBClient(url=self.url, token=self.token) as client:
                 # Set write options: batch size, flush interval, jitter, etc.
                 write_options = WriteOptions(batch_size=1000, flush_interval=100, jitter_interval=100)
-
                 # Use write_api within the context
                 with client.write_api(write_options=write_options) as write_api:
+                    self.write_summary_record(write_api, customer, server, file)
                     # Loop through each record and write it to InfluxDB
                     for record in data:
                         # Prepare the record for writing
@@ -81,6 +112,8 @@ class Database:
 
                     # Flush data to ensure all points are written before closing
                     write_api.flush()
+                      # Write the summary record at the end
+
 
             print(f"All data for {file} successfully written to InfluxDB")
         except Exception as e:
@@ -230,7 +263,7 @@ def import_data(header, filename, customer, server, subroutine_key, file, digits
         print(f"My S3 {s3_key}")
         print(f"My tmp {filename_new}")
         records = df.to_dict(orient="records")
-        db.write(records,s3_key)  # Send to InfluxD
+        db.write(records,s3_key,customer,server)  # Send to InfluxD
         move_s3_object(get_raw_bucket_name(), get_processed_bucket_name(), s3_key)
         print(f"Hopefully uploaded {filename_new} to s3://{get_processed_bucket_name()}/{s3_key}")
 
@@ -267,7 +300,7 @@ def import_partitions(header, filename, customer, server, subroutine_key, file, 
         print(f"My S3 {s3_key}")
         print(f"My tmp {filename_new}")
         records = df.to_dict(orient="records")
-        db.write(records,s3_key)  # Send to InfluxD
+        db.write(records,s3_key,customer,server)  # Send to InfluxD
         move_s3_object(get_raw_bucket_name(), get_processed_bucket_name(), s3_key)
         print(f"Hopefully uploaded {filename_new} to s3://{get_processed_bucket_name()}/{s3_key}")
 
@@ -313,7 +346,7 @@ def cpu_by_app(header, filename, customer, server, subroutine_key, file, digits)
         print(f"My S3 {s3_key}")
         print(f"My tmp {filename_new}")
         records = df.to_dict(orient="records")
-        db.write(records,s3_key)  # Send to InfluxD
+        db.write(records,s3_key,customer,server)  # Send to InfluxD
         move_s3_object(get_raw_bucket_name(), get_processed_bucket_name(), s3_key)
         print(f"Hopefully uploaded {filename_new} to s3://{get_processed_bucket_name()}/{s3_key}")
 
@@ -351,7 +384,7 @@ def import_data_onstat_l(header, filename, customer, server, subroutine_key, fil
         print(f"My S3 {s3_key}")
         print(f"My tmp {filename_new}")
         records = df.to_dict(orient="records")
-        db.write(records,s3_key)  # Send to InfluxD
+        db.write(records,s3_key,customer,server)  # Send to InfluxD
         move_s3_object(get_raw_bucket_name(), get_processed_bucket_name(), s3_key)
         print(f"Hopefully uploaded {filename_new} to s3://{get_processed_bucket_name()}/{s3_key}")
 
