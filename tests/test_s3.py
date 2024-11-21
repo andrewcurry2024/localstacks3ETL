@@ -59,7 +59,7 @@ def wait_for_lambdas():
     awslambda.get_waiter("function_active").wait(FunctionName="list")
 
 
-def wait_for_file_in_s3(bucket, prefix, retries=10, wait_time=5):
+def wait_for_file_in_s3(bucket, prefix, retries=60, wait_time=5):
     """
     Helper function to wait for a file to appear in S3.
     It retries the check for a given number of times, with a specified delay between each attempt.
