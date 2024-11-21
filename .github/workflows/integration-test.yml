@@ -24,7 +24,6 @@ on:
           - ubuntu-latest
           - macos-latest
 
-
 jobs:
   run-it-tests-job:
     runs-on: ${{ inputs.runner-os || 'ubuntu-latest' }}
@@ -49,20 +48,57 @@ jobs:
         run: |
           pip install -r requirements-dev.txt
 
-      - name: Start LocalStack
-        uses: LocalStack/setup-localstack@v0.2.2
-        with:
-          image-tag: 'latest'
-          use-pro: 'true'
-          configuration: LS_LOG=trace
-          install-awslocal: 'true'
+      - name: Start LocalStack and Dependencies
         env:
-          LOCALSTACK_API_KEY: ${{ secrets.LOCALSTACK_API_KEY }}
-      - name: Build lambdas
+          LOCALSTACK_AUTH_TOKEN: ${{ secrets.LOCALSTACK_API_KEY }}
+        run: |
+          echo "Starting LocalStack and setting up the environment..."
+
+          # Create Docker network if not already exists
+          docker network create localstack_network || echo "Network already exists"
+
+          # Start InfluxDB container
+          docker run -d --network localstack_network --name influxdb \
+            -e DOCKER_INFLUXDB_INIT_USERNAME=admin \
+            -e DOCKER_INFLUXDB_INIT_PASSWORD=adminpassword \
+            -e DOCKER_INFLUXDB_INIT_ORG=myorg \
+            -e DOCKER_INFLUXDB_INIT_BUCKET=mydb \
+            -e DOCKER_INFLUXDB_INIT_MODE=setup \
+            -e DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=my-super-secret-auth-token \
+            -p 8086:8086 \
+            influxdb:2
+
+          # Start Grafana container
+          docker run -d --network localstack_network --name grafana \
+            -e GF_SECURITY_ADMIN_PASSWORD=admin \
+            -p 3000:3000 \
+            grafana/grafana:main
+
+          # Start LocalStack Pro container
+          localstack start --network localstack_network -d
+
+          # Wait for services to initialise
+          echo "Waiting for services to start..."
+          sleep 15
+
+          # Configure Grafana with the InfluxDB data source
+          curl -X POST "http://localhost:3000/api/datasources" \
+            -H "Authorization: Basic YWRtaW46YWRtaW4=" \
+            -H "Content-Type: application/json" \
+            --data-binary @exported_datasources/influxdb_datasource.json
+
+          # Add a Grafana dashboard
+          cat deployment/grafana/dashboard.json | jq '. * {overwrite: true, dashboard: {id: null, title: "My Dashboard Title"}}' | \
+            curl -X POST "http://localhost:3000/api/dashboards/db" \
+            -H "Authorization: Basic YWRtaW46YWRtaW4=" \
+            -H "Content-Type: application/json" \
+            -d @-
+
+      - name: Build Lambdas
         run: |
           bin/build_lambdas.sh
 
-      - name: Deploy infrastructure
+      - name: Deploy Infrastructure
         run: |
           deployment/awslocal/deploy.sh
 
@@ -75,25 +111,12 @@ jobs:
         run: |
           pytest tests
 
-      - name: Show localstack logs
+      - name: Show LocalStack Logs
         if: always()
         run: |
           localstack logs
 
-      #- name: Send a Slack notification
-      #  if: failure() || github.event_name != 'pull_request'
-      #  uses: ravsamhq/notify-slack-action@v2
-      #  with:
-      #    status: ${{ job.status }}
-      #    token: ${{ secrets.GITHUB_TOKEN }}
-      #    notification_title: "{workflow} has {status_message}"
-      #    message_format: "{emoji} *{workflow}* {status_message} in <{repo_url}|{repo}>"
-      #    footer: "Linked Repo <{repo_url}|{repo}> | <{run_url}|View Workflow run>"
-      #    notify_when: "failure"
-      #  env:
-      #    SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-
-      - name: Generate a Diagnostic Report
+      - name: Generate Diagnostic Report
         if: failure()
         run: |
           curl -s localhost:4566/_localstack/diagnose | gzip -cf > diagnose.json.gz
