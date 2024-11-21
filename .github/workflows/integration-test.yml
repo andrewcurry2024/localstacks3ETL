@@ -13,7 +13,6 @@ on:
     branches:
       - main
   schedule:
-    # “At 00:00 on Sunday.”
     - cron: "0 0 * * 0"
   workflow_dispatch:
     inputs:
@@ -32,21 +31,18 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Set up Python 3.11
-        id: setup-python
         uses: actions/setup-python@v2
         with:
           python-version: 3.11
 
       - name: Docker setup (macos only)
-        id: setup-docker-mac
         if: ${{ runner.os == 'macOS' }}
         run: |
           brew install docker
           colima start
 
       - name: Set up Project
-        run: |
-          pip install -r requirements-dev.txt
+        run: pip install -r requirements-dev.txt
 
       - name: Start LocalStack
         uses: LocalStack/setup-localstack@v0.2.3
@@ -55,7 +51,13 @@ jobs:
           install-awslocal: 'true'
           skip-startup: 'true'
         env:
-        LOCALSTACK_API_KEY: ${{ secrets.LOCALSTACK_API_KEY }}
+          LOCALSTACK_API_KEY: ${{ secrets.LOCALSTACK_API_KEY }}
+
+      - name: Add LocalStack CLI to PATH
+        run: echo "::add-path::${HOME}/.local/bin"
+
+      - name: Install jq
+        run: sudo apt-get install jq -y
 
       - name: Start LocalStack and Dependencies
         env:
@@ -77,14 +79,13 @@ jobs:
             -p 8086:8086 \
             influxdb:2
 
+          localstack start --network localstack_network -d
+
           # Start Grafana container
           docker run -d --network localstack_network --name grafana \
             -e GF_SECURITY_ADMIN_PASSWORD=admin \
             -p 3000:3000 \
             grafana/grafana:main
-
-          # Start LocalStack Pro container
-          localstack start --network localstack_network -d
 
           # Wait for services to initialise
           echo "Waiting for services to start..."
@@ -104,12 +105,10 @@ jobs:
             -d @-
 
       - name: Build Lambdas
-        run: |
-          bin/build_lambdas.sh
+        run: bin/build_lambdas.sh
 
       - name: Deploy Infrastructure
-        run: |
-          deployment/awslocal/deploy.sh
+        run: deployment/awslocal/deploy.sh
 
       - name: Run Tests
         env:
@@ -117,18 +116,15 @@ jobs:
           AWS_REGION: us-east-1
           AWS_ACCESS_KEY_ID: test
           AWS_SECRET_ACCESS_KEY: test
-        run: |
-          pytest tests
+        run: pytest tests
 
       - name: Show LocalStack Logs
         if: always()
-        run: |
-          localstack logs
+        run: localstack logs
 
       - name: Generate Diagnostic Report
         if: failure()
-        run: |
-          curl -s localhost:4566/_localstack/diagnose | gzip -cf > diagnose.json.gz
+        run: curl -s localhost:4566/_localstack/diagnose | gzip -cf > diagnose.json.gz
 
       - name: Upload the Diagnostic Report
         if: failure()
