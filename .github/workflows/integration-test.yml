@@ -54,7 +54,7 @@ jobs:
           LOCALSTACK_API_KEY: ${{ secrets.LOCALSTACK_API_KEY }}
 
       - name: Add LocalStack CLI to PATH
-        run: echo "::add-path::${HOME}/.local/bin"
+        run: echo "${HOME}/.local/bin" >> $GITHUB_PATH
 
       - name: Install jq
         run: sudo apt-get install jq -y
