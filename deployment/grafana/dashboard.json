@@ -7,6 +7,7 @@
     "timezone": "browser",
     "schemaVersion": 16,
     "refresh": "25s",
+
   "annotations": {
     "list": [
       {
@@ -72,7 +73,8 @@
     },
     {
       "datasource": {
-        "uid": "InfluxDB"
+        "type": "influxdb",
+        "uid": "de3b5waz100lcf"
       },
       "fieldConfig": {
         "defaults": {
@@ -189,30 +191,32 @@
           ],
           "displayMode": "table",
           "placement": "right",
-          "showLegend": true
+          "showLegend": true,
+          "sortBy": "Mean",
+          "sortDesc": true
         },
         "tooltip": {
           "mode": "multi",
           "sort": "none"
         }
       },
-      "pluginVersion": "11.4.0-207410",
+      "pluginVersion": "11.4.0-208838",
       "targets": [
         {
-          "alias": "$tag_tag_1",
+          "alias": "$tag_metric",
           "datasource": {
             "uid": "InfluxDB"
           },
           "groupBy": [
             {
               "params": [
-                "$__interval"
+                "1m"
               ],
               "type": "time"
             },
             {
               "params": [
-                "tag_1"
+                "metric::tag"
               ],
               "type": "tag"
             },
@@ -243,23 +247,6 @@
             ]
           ],
           "tags": [
-            {
-              "key": "machine",
-              "operator": "=~",
-              "value": "/^$Machine$/"
-            },
-            {
-              "condition": "AND",
-              "key": "customer",
-              "operator": "=~",
-              "value": "/^$customer_name$/"
-            },
-            {
-              "condition": "AND",
-              "key": "tag_1",
-              "operator": "=~",
-              "value": "/^$Partitions$/"
-            },
             {
               "condition": "AND",
               "key": "$profile_type",
@@ -373,7 +360,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.4.0-207410",
+      "pluginVersion": "11.4.0-208838",
       "targets": [
         {
           "alias": "cpu_avg_busy",
@@ -507,7 +494,7 @@
           "measurement": "osmon_sum",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT max(\"cpu_avg_busy\") FROM \"default\".\"osmon\"WHERE (\"customer\"::tag =~ /^$customer_name$/ AND \"server\"::tag =~ /^$Machine$/) AND $timeFilter GROUP BY time(1m) fill(linear)",
+          "query": "SELECT max(\"cpu_avg_busy\") FROM \"osmon\"WHERE (\"customer\"::tag =~ /^$customer_name$/ AND \"server\"::tag =~ /^$Machine$/) AND $timeFilter GROUP BY time(1m) fill(linear)",
           "rawQuery": false,
           "refId": "C",
           "resultFormat": "time_series",
@@ -630,14 +617,14 @@
         },
         "showHeader": true
       },
-      "pluginVersion": "11.4.0-207410",
+      "pluginVersion": "11.4.0-208838",
       "targets": [
         {
           "datasource": {
             "uid": "InfluxDB"
           },
           "groupBy": [],
-          "measurement": "dbmonitor_alert",
+          "measurement": "db_check_info",
           "orderByTime": "ASC",
           "policy": "default",
           "refId": "A",
@@ -660,13 +647,13 @@
           ],
           "tags": [
             {
-              "key": "customer",
+              "key": "customer::tag",
               "operator": "=~",
               "value": "/^$customer_name$/"
             },
             {
               "condition": "AND",
-              "key": "machine",
+              "key": "server::tag",
               "operator": "=~",
               "value": "/^$Machine$/"
             }
@@ -822,7 +809,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.4.0-207410",
+      "pluginVersion": "11.4.0-208838",
       "targets": [
         {
           "alias": "$tag_metric",
@@ -851,7 +838,7 @@
           ],
           "hide": false,
           "limit": "",
-          "measurement": "openbet_cpu_by_app",
+          "measurement": "cpu_by_app",
           "orderByTime": "ASC",
           "policy": "default",
           "query": "SELECT max(\"cores\") FROM \"default\".\"server_usage\" WHERE (\"customer\" =~ /^$customer_name$/ AND \"machine\" =~ /^$Machine$/) AND metric !~/TOTAL/ AND $timeFilter GROUP BY time($__interval), \"tag_1\" fill(none)",
@@ -1099,7 +1086,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.4.0-207410",
+      "pluginVersion": "11.4.0-208838",
       "targets": [
         {
           "alias": "$tag_metric",
@@ -1128,7 +1115,7 @@
           ],
           "hide": false,
           "limit": "",
-          "measurement": "openbet_cpu_by_app",
+          "measurement": "cpu_by_app",
           "orderByTime": "ASC",
           "policy": "default",
           "query": "SELECT max(\"cores\") FROM \"default\".\"server_usage\" WHERE (\"customer\" =~ /^$customer_name$/ AND \"machine\" =~ /^$Machine$/) AND metric !~/TOTAL/ AND $timeFilter GROUP BY time($__interval), \"tag_1\" fill(none)",
@@ -1269,7 +1256,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.4.0-207410",
+      "pluginVersion": "11.4.0-208838",
       "targets": [
         {
           "datasource": {
@@ -1451,7 +1438,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.4.0-207410",
+      "pluginVersion": "11.4.0-208838",
       "targets": [
         {
           "alias": "",
@@ -1673,7 +1660,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -1709,7 +1697,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.4.0-207410",
+      "pluginVersion": "11.4.0-208838",
       "targets": [
         {
           "datasource": {
@@ -1897,7 +1885,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -1982,7 +1971,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.4.0-207410",
+      "pluginVersion": "11.4.0-208838",
       "targets": [
         {
           "alias": "$tag_tag_1",
@@ -2099,7 +2088,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -2131,7 +2121,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.4.0-207410",
+      "pluginVersion": "11.4.0-208838",
       "targets": [
         {
           "alias": "vpcache",
@@ -2239,7 +2229,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -2284,7 +2275,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.4.0-207410",
+      "pluginVersion": "11.4.0-208838",
       "targets": [
         {
           "datasource": {
@@ -2415,7 +2406,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -2512,7 +2504,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.4.0-207410",
+      "pluginVersion": "11.4.0-208838",
       "targets": [
         {
           "datasource": {
@@ -2619,7 +2611,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -2651,7 +2644,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.4.0-207410",
+      "pluginVersion": "11.4.0-208838",
       "targets": [
         {
           "datasource": {
@@ -2783,7 +2776,8 @@
     },
     {
       "datasource": {
-        "uid": "InfluxDB"
+        "type": "influxdb",
+        "uid": "de3b5waz100lcf"
       },
       "fieldConfig": {
         "defaults": {
@@ -2829,7 +2823,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -2913,7 +2908,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.4.0-207410",
+      "pluginVersion": "11.4.0-208838",
       "targets": [
         {
           "datasource": {
@@ -2933,7 +2928,7 @@
               "type": "fill"
             }
           ],
-          "measurement": "checkpoint_info",
+          "measurement": "checkpoints",
           "orderByTime": "ASC",
           "policy": "default",
           "queryType": "randomWalk",
@@ -3033,13 +3028,13 @@
           ],
           "tags": [
             {
-              "key": "customer",
+              "key": "customer::tag",
               "operator": "=~",
               "value": "/^$customer_name$/"
             },
             {
               "condition": "AND",
-              "key": "machine",
+              "key": "server::tag",
               "operator": "=~",
               "value": "/^$Machine$/"
             }
@@ -3052,7 +3047,8 @@
     },
     {
       "datasource": {
-        "uid": "InfluxDB"
+        "type": "influxdb",
+        "uid": "de3b5waz100lcf"
       },
       "fieldConfig": {
         "defaults": {
@@ -3098,7 +3094,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -3191,7 +3188,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.4.0-207410",
+      "pluginVersion": "11.4.0-208838",
       "targets": [
         {
           "datasource": {
@@ -3211,7 +3208,7 @@
               "type": "fill"
             }
           ],
-          "measurement": "checkpoint_info",
+          "measurement": "checkpoints",
           "orderByTime": "ASC",
           "policy": "default",
           "queryType": "randomWalk",
@@ -3275,13 +3272,13 @@
           ],
           "tags": [
             {
-              "key": "customer",
+              "key": "customer::tag",
               "operator": "=~",
               "value": "/^$customer_name$/"
             },
             {
               "condition": "AND",
-              "key": "machine",
+              "key": "server::tag",
               "operator": "=~",
               "value": "/^$Machine$/"
             }
@@ -3355,7 +3352,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -3452,7 +3450,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.4.0-207410",
+      "pluginVersion": "11.4.0-208838",
       "targets": [
         {
           "alias": "",
@@ -3716,7 +3714,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -3761,7 +3760,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.4.0-207410",
+      "pluginVersion": "11.4.0-208838",
       "targets": [
         {
           "datasource": {
@@ -3924,7 +3923,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -3995,7 +3995,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.4.0-207410",
+      "pluginVersion": "11.4.0-208838",
       "targets": [
         {
           "alias": "",
@@ -4184,7 +4184,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -4241,7 +4242,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.4.0-207410",
+      "pluginVersion": "11.4.0-208838",
       "targets": [
         {
           "alias": "",
@@ -4434,7 +4435,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -4527,7 +4529,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.4.0-207410",
+      "pluginVersion": "11.4.0-208838",
       "targets": [
         {
           "alias": "",
@@ -4755,7 +4757,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -4800,7 +4803,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.4.0-207410",
+      "pluginVersion": "11.4.0-208838",
       "targets": [
         {
           "datasource": {
@@ -4991,7 +4994,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -5022,7 +5026,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.4.0-207410",
+      "pluginVersion": "11.4.0-208838",
       "targets": [
         {
           "datasource": {
@@ -5155,8 +5159,8 @@
       },
       {
         "current": {
-          "text": "gibux341.prod.williamhill.plc",
-          "value": "gibux341.prod.williamhill.plc"
+          "text": "ld6ux730",
+          "value": "ld6ux730"
         },
         "datasource": "InfluxDB",
         "definition": "",
@@ -5209,8 +5213,8 @@
       },
       {
         "current": {
-          "text": "dlks",
-          "value": "dlks"
+          "text": "bfwrt",
+          "value": "bfwrt"
         },
         "includeAll": false,
         "label": "Page Size",
@@ -5222,12 +5226,12 @@
             "value": "bfrd"
           },
           {
-            "selected": false,
+            "selected": true,
             "text": "bfwrt",
             "value": "bfwrt"
           },
           {
-            "selected": true,
+            "selected": false,
             "text": "dlks",
             "value": "dlks"
           },
@@ -5316,8 +5320,8 @@
     ]
   },
   "time": {
-    "from": "2024-10-10T11:05:29.757Z",
-    "to": "2024-10-10T13:27:47.384Z"
+    "from": "2024-11-20T15:03:39.508Z",
+    "to": "2024-11-20T15:15:48.437Z"
   }
 },
   "timepicker": {},

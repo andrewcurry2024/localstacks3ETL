@@ -48,7 +48,7 @@ awslocal lambda create-function-url-config \
 awslocal lambda create-function \
     --function-name transform \
     --runtime python3.11 \
-    --timeout 10 \
+    --timeout 120 \
     --zip-file fileb://lambdas/transform/lambda.zip \
     --handler handler.handler \
     --dead-letter-config TargetArn=arn:aws:sns:us-east-1:000000000000:failed-process-topic \
