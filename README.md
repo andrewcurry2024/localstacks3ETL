@@ -2,6 +2,9 @@
 
 This guide outlines the setup and management of the LocalStack-based environment and Lambda functions, including key make commands.
 
+## ETL process
+![ETL Image](webpsite/ETLdiagram.jpg "ETL diagram")
+
 ## Prerequisites
 - Install `LocalStack` for local AWS service emulation.
 - Install necessary dependencies using the `install` command provided below.

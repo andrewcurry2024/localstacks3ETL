@@ -122,6 +122,21 @@ class Database:
 # Execution setup
 db = Database()
 
+def convert_numeric_columns_to_float(df):
+    """
+    Convert all numeric columns in a DataFrame to float.
+    
+    Parameters:
+        df (pd.DataFrame): The DataFrame to process.
+    
+    Returns:
+        pd.DataFrame: The DataFrame with numeric columns converted to float.
+    """
+    # Select numeric columns and convert them to float
+    numeric_cols = df.select_dtypes(include=['number']).columns
+    df[numeric_cols] = df[numeric_cols].astype(float)
+    return df
+
 def move_s3_object(source_bucket: str, destination_bucket: str, object_key: str, destination_key: str = None):
     """
     Moves an object from one S3 bucket to another by copying it to the destination and deleting it from the source.
@@ -239,6 +254,8 @@ def clean_data(df: pd.DataFrame, header: str, customer: str, server: str, sub_ke
     df.loc[:, 'server'] = server
     df.loc[:, '_measurement'] = sub_key
     df.loc[:, 'digits'] = digits
+
+    df = convert_numeric_columns_to_float(df)
 
     print(f"Cleaned Data Overview for {customer}-{server}:")
     print(df.info())
