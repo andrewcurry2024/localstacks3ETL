@@ -157,28 +157,13 @@ Before starting, ensure you have the following tools installed:
 │   ├── export.sh
 │   ├── influxdb_datasource.json
 │   └── try_export.sh
-├── htmlcov
-│   ├── class_index.html
-│   ├── coverage_html_cb_6fb7b396.js
-│   ├── favicon_32_cb_58284776.png
-│   ├── function_index.html
-│   ├── index.html
-│   ├── keybd_closed_cb_ce680311.png
-│   ├── status.json
-│   ├── style_cb_8e611ae1.css
-│   ├── z_a44f0ac069e85531_test_list_py.html
-│   ├── z_a44f0ac069e85531_test_s3_py.html
-│   └── z_a44f0ac069e85531_test_subroutines_py.html
 ├── lambdas
 │   ├── list
 │   │   ├── handler.py
-│   │   └── lambda.zip
 │   ├── presign
 │   │   ├── handler.py
-│   │   └── lambda.zip
 │   └── transform
 │       ├── handler.py
-│       ├── lambda.zip
 │       ├── requirements.txt
 │       └── subroutines_config.json
 ├── out
