@@ -35,56 +35,86 @@ This guide outlines the setup and management of the LocalStack-based environment
 Here's the complete `Makefile` with inline comments for reference:
 
 ```makefile
-# Define AWS credentials for local use
 export AWS_ACCESS_KEY_ID ?= test
 export AWS_SECRET_ACCESS_KEY ?= test
-exit ACTIVATE_PRO=0
+export ACTIVATE_PRO=0
+export AWS_DEFAULT_REGION=us-east-1
 SHELL := /bin/bash
 
-# Load environment variables from `.env` file
 include .env
 
-# List available commands with descriptions
-usage:              ## Show this help
+usage:				## Show this help
 		@grep -F -h "##" $(MAKEFILE_LIST) | grep -F -v grep -F | sed -e 's/\\$$//' -e 's/##//'
 
-# Install necessary Python dependencies
-install:            ## Install dependencies
+install:			## Install dependencies
 		@pip install -r requirements-dev.txt
 
-# Build Lambda functions from the `lambdas` directory
-build:              ## Build lambdas in the lambdas folder
+build: 				## Build lambdas in the lambdas folder
 		bin/build_lambdas.sh;
 
-# Set up application locally using `awslocal`
-awslocal-setup:     ## Deploy the application locally using `awslocal`, a wrapper for the AWS CLI
+awslocal-setup: 		## Deploy the application locally using `awslocal`, a wrapper for the AWS CLI
 		$(MAKE) build
 		deployment/awslocal/deploy.sh
 
-# Start LocalStack Pro container in detached mode
-start:              ## Start the LocalStack Pro container in detached mode
-		@LOCALSTACK_AUTH_TOKEN=$(LOCALSTACK_AUTH_TOKEN) localstack start -d
+start:				## Start the LocalStack Pro container in the detached mode
+		#@LOCALSTACK_AUTH_TOKEN=$(LOCALSTACK_AUTH_TOKEN) localstack start -d
+		# Create Docker network if not already exists
+		docker network create localstack_network || echo "Network already exists"
 
-# Stop the LocalStack Pro container
-stop:               ## Stop the LocalStack Pro container
-		localstack stop
+		# Start InfluxDB container and connect it to the localstack_network
+		docker run -d --network localstack_network --name influxdb \
+		  -e DOCKER_INFLUXDB_INIT_USERNAME=admin \
+		  -e DOCKER_INFLUXDB_INIT_PASSWORD=adminpassword \
+		  -e DOCKER_INFLUXDB_INIT_ORG=myorg \
+		  -e DOCKER_INFLUXDB_INIT_BUCKET=mydb \
+		  -e DOCKER_INFLUXDB_INIT_MODE=setup \
+		  -e DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=my-super-secret-auth-token \
+		  -p 8086:8086 \
+		  influxdb:2
 
-# Clean up all containers, images, and Lambda zip files
-clean:              ## Clean up environment
+		# Start Grafana container and connect it to the localstack_network
+		docker run -d --network localstack_network --name grafana \
+		  -e GF_SECURITY_ADMIN_PASSWORD=admin \
+		  -p 3000:3000 grafana/grafana:main
+
+		echo "Starting LocalStack with provided AUTH_TOKEN..."
+		@LOCALSTACK_AUTH_TOKEN=$(LOCALSTACK_AUTH_TOKEN) localstack start --network localstack_network -d
+
+
+		# Wait for the services to initialize (optional, you can increase sleep time if necessary)
+		echo "Waiting for services to start..."
+		sleep 15
+		curl -X POST "http://localhost:3000/api/datasources"   -H "Authorization: Basic YWRtaW46YWRtaW4="   -H "Content-Type: application/json"   --data-binary @exported_datasources/influxdb_datasource.json
+		cat deployment/grafana/dashboard.json | jq '. * {overwrite: true, dashboard: {id: null, title: "My Dashboard Title"}}' | curl -X POST "http://localhost:3000/api/dashboards/db" -H "Authorization: Basic YWRtaW46YWRtaW4=" -H "Content-Type: application/json" -d @-
+
+		echo "LocalStack, InfluxDB, and Grafana are now running."
+		echo "Grafana is available at http://localhost:3000"
+		echo "InfluxDB is available at http://localhost:8086"
+
+stop:				## Stop the LocalStack Pro container
+		# Stop and remove the containers
+		docker stop localstack-main influxdb grafana || echo "One or more containers are not running."
+		docker rm localstack influxdb grafana || echo "One or more containers could not be removed."
+
+		# Optionally, remove the Docker network if it's no longer needed
+		docker network rm localstack_network || echo "Network was not removed."
+
+		echo "LocalStack, InfluxDB, and Grafana have been stopped and removed."
+
+clean:				## clean up everything
 		localstack stop
-		docker image prune -a --force
+		make stop
+		docker container prune --force
 		rm lambdas/*/lambda.zip
-
-# Perform a full setup, including start, install, and local deployment
-full:               ## Run a full setup, starting LocalStack and deploying the application
+full:		## Full rebuild
 		make start install awslocal-setup
-
-# Re-sync website files with S3 bucket and enable static hosting
-repost:             ## Re-sync website content to S3
+repost:		## repost website stuff (saves reloading)
 		awslocal s3 sync --delete ./website s3://webapp
 		awslocal s3 website s3://webapp --index-document index.html
+lambda:		## refesh lambda only
+		./bin/build_lambdas.sh
+		awslocal lambda update-function-code   --function-name transform   --zip-file fileb://lambdas/transform/lambda.zip
 
-# Declare phony targets (i.e., not tied to specific files)
 .PHONY: usage install build awslocal-setup start stop full clean repost
 ```
 
