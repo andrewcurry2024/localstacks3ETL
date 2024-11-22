@@ -322,7 +322,6 @@ awslocal s3 website s3://webapp --index-document index.html
 -	HTML/HQuery interface can be used to upload the files and monitor the processing
 -	
 ## Grafana
-
-note for grafana to fully work you must change the password in the datasource, Grafana does not allow this to be automate via a cli. so copy what you set as DOCKER_INFLUXDB_INIT_ADMIN_TOKEN and just enter it into the datasource password and save.  
+For Grafana to fully work, you must change the password in the data source. Grafana does not allow this to be automated via a cli. So copy what you set as DOCKER_INFLUXDB_INIT_ADMIN_TOKEN and just enter it into the datasource password and save.  
 Everything else will be automatic.
 
