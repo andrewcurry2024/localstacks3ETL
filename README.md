@@ -320,4 +320,8 @@ awslocal s3 website s3://webapp --index-document index.html
 -	Grafana will display the metrics in a preconfigured dashboard
 -	In case of a failure, an email notification will be sent via SNS.
 -	HTML/HQuery interface can be used to upload the files and monitor the processing
+-	
+## Grafana
+For Grafana to fully work, you must change the password in the data source. Grafana does not allow this to be automated via a cli. So copy what you set as DOCKER_INFLUXDB_INIT_ADMIN_TOKEN and just enter it into the datasource password and save.  
+Everything else will be automatic.
 
