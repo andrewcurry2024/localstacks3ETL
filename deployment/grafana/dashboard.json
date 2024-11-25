@@ -7,7 +7,6 @@
     "timezone": "browser",
     "schemaVersion": 16,
     "refresh": "25s",
-
   "annotations": {
     "list": [
       {
@@ -200,7 +199,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.4.0-208838",
+      "pluginVersion": "11.4.0-209714",
       "targets": [
         {
           "alias": "$tag_metric",
@@ -360,7 +359,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.4.0-208838",
+      "pluginVersion": "11.4.0-209714",
       "targets": [
         {
           "alias": "cpu_avg_busy",
@@ -617,7 +616,7 @@
         },
         "showHeader": true
       },
-      "pluginVersion": "11.4.0-208838",
+      "pluginVersion": "11.4.0-209714",
       "targets": [
         {
           "datasource": {
@@ -802,14 +801,16 @@
           ],
           "displayMode": "table",
           "placement": "right",
-          "showLegend": true
+          "showLegend": true,
+          "sortBy": "Max",
+          "sortDesc": true
         },
         "tooltip": {
           "mode": "multi",
           "sort": "none"
         }
       },
-      "pluginVersion": "11.4.0-208838",
+      "pluginVersion": "11.4.0-209714",
       "targets": [
         {
           "alias": "$tag_metric",
@@ -1086,7 +1087,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.4.0-208838",
+      "pluginVersion": "11.4.0-209714",
       "targets": [
         {
           "alias": "$tag_metric",
@@ -1256,7 +1257,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.4.0-208838",
+      "pluginVersion": "11.4.0-209714",
       "targets": [
         {
           "datasource": {
@@ -1438,7 +1439,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.4.0-208838",
+      "pluginVersion": "11.4.0-209714",
       "targets": [
         {
           "alias": "",
@@ -1697,7 +1698,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.4.0-208838",
+      "pluginVersion": "11.4.0-209714",
       "targets": [
         {
           "datasource": {
@@ -1971,7 +1972,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.4.0-208838",
+      "pluginVersion": "11.4.0-209714",
       "targets": [
         {
           "alias": "$tag_tag_1",
@@ -2121,7 +2122,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.4.0-208838",
+      "pluginVersion": "11.4.0-209714",
       "targets": [
         {
           "alias": "vpcache",
@@ -2275,7 +2276,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.4.0-208838",
+      "pluginVersion": "11.4.0-209714",
       "targets": [
         {
           "datasource": {
@@ -2504,7 +2505,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.4.0-208838",
+      "pluginVersion": "11.4.0-209714",
       "targets": [
         {
           "datasource": {
@@ -2644,7 +2645,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.4.0-208838",
+      "pluginVersion": "11.4.0-209714",
       "targets": [
         {
           "datasource": {
@@ -2908,7 +2909,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.4.0-208838",
+      "pluginVersion": "11.4.0-209714",
       "targets": [
         {
           "datasource": {
@@ -3188,7 +3189,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.4.0-208838",
+      "pluginVersion": "11.4.0-209714",
       "targets": [
         {
           "datasource": {
@@ -3450,7 +3451,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.4.0-208838",
+      "pluginVersion": "11.4.0-209714",
       "targets": [
         {
           "alias": "",
@@ -3760,7 +3761,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.4.0-208838",
+      "pluginVersion": "11.4.0-209714",
       "targets": [
         {
           "datasource": {
@@ -3870,6 +3871,7 @@
       },
       "id": 30,
       "panels": [],
+      "repeat": "page_size",
       "title": "Buffers",
       "type": "row"
     },
@@ -3995,7 +3997,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.4.0-208838",
+      "pluginVersion": "11.4.0-209714",
       "targets": [
         {
           "alias": "",
@@ -4125,7 +4127,7 @@
             {
               "condition": "AND",
               "key": "pagesize::tag",
-              "operator": "=",
+              "operator": "=~",
               "value": "/^$page_size$/"
             }
           ]
@@ -4242,7 +4244,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.4.0-208838",
+      "pluginVersion": "11.4.0-209714",
       "targets": [
         {
           "alias": "",
@@ -4529,7 +4531,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.4.0-208838",
+      "pluginVersion": "11.4.0-209714",
       "targets": [
         {
           "alias": "",
@@ -4709,6 +4711,19 @@
       "type": "timeseries"
     },
     {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 156
+      },
+      "id": 62,
+      "panels": [],
+      "title": "Buffer Fast Cache",
+      "type": "row"
+    },
+    {
       "datasource": {
         "type": "influxdb",
         "uid": "de3b5waz100lcf"
@@ -4786,8 +4801,8 @@
       "gridPos": {
         "h": 8,
         "w": 12,
-        "x": 12,
-        "y": 148
+        "x": 0,
+        "y": 157
       },
       "id": 54,
       "options": {
@@ -4803,7 +4818,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.4.0-208838",
+      "pluginVersion": "11.4.0-209714",
       "targets": [
         {
           "datasource": {
@@ -4938,10 +4953,11 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 156
+        "y": 165
       },
       "id": 40,
       "panels": [],
+      "repeat": "page_size",
       "title": "LRUs",
       "type": "row"
     },
@@ -5010,7 +5026,7 @@
         "h": 9,
         "w": 12,
         "x": 0,
-        "y": 157
+        "y": 166
       },
       "id": 42,
       "options": {
@@ -5026,7 +5042,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.4.0-208838",
+      "pluginVersion": "11.4.0-209714",
       "targets": [
         {
           "datasource": {
@@ -5135,98 +5151,119 @@
     }
   ],
   "preload": false,
-  "refresh": false,
+  "refresh": "auto",
   "schemaVersion": 40,
   "tags": [],
   "templating": {
     "list": [
       {
+        "allowCustomValue": true,
         "current": {
           "text": "WilliamHill",
           "value": "WilliamHill"
         },
-        "datasource": "InfluxDB",
-        "definition": "",
+        "datasource": {
+          "type": "influxdb",
+          "uid": "de3b5waz100lcf"
+        },
+        "definition": "select distinct(customer) from customer_server",
         "includeAll": false,
         "label": "Customer",
         "name": "customer_name",
         "options": [],
-        "query": "select distinct(customer) from customer_server where customer !~/Williamhill/\n\n",
+        "query": {
+          "query": "select distinct(customer) from customer_server",
+          "refId": "InfluxVariableQueryEditor-VariableQuery"
+        },
         "refresh": 1,
         "regex": "",
         "sort": 1,
         "type": "query"
       },
       {
+        "allowCustomValue": true,
         "current": {
           "text": "ld6ux730",
           "value": "ld6ux730"
         },
-        "datasource": "InfluxDB",
-        "definition": "",
+        "datasource": {
+          "type": "influxdb",
+          "uid": "de3b5waz100lcf"
+        },
+        "definition": "select distinct(machine) from customer_server WHERE customer =~ /^$customer_name$/",
         "includeAll": false,
         "label": "machine_name",
         "name": "Machine",
         "options": [],
-        "query": "select distinct(machine) from customer_server  WHERE customer =~ /^$customer_name$/",
+        "query": {
+          "query": "select distinct(machine) from customer_server WHERE customer =~ /^$customer_name$/",
+          "refId": "InfluxVariableQueryEditor-VariableQuery"
+        },
         "refresh": 1,
         "regex": "",
         "type": "query"
       },
       {
+        "allowCustomValue": true,
         "current": {
-          "text": "4",
-          "value": "4"
+          "text": [
+            "2.0"
+          ],
+          "value": [
+            "2.0"
+          ]
         },
-        "includeAll": false,
+        "includeAll": true,
         "label": "Page Size",
+        "multi": true,
         "name": "page_size",
         "options": [
           {
-            "selected": false,
-            "text": "2",
-            "value": "2"
-          },
-          {
             "selected": true,
-            "text": "4",
-            "value": "4"
+            "text": "2.0",
+            "value": "2.0"
           },
           {
             "selected": false,
-            "text": "8",
-            "value": "8"
+            "text": "4.0",
+            "value": "4.0"
           },
           {
             "selected": false,
-            "text": "12",
-            "value": "12"
+            "text": "8.0",
+            "value": "8.0"
           },
           {
             "selected": false,
-            "text": "16",
-            "value": "16"
+            "text": "12.0",
+            "value": "12.0"
+          },
+          {
+            "selected": false,
+            "text": "16.0",
+            "value": "16.0"
           }
         ],
-        "query": "2,4,8,12,16",
+        "query": "2.0,4.0,8.0,12.0,16.0",
         "type": "custom"
       },
       {
+        "allowCustomValue": true,
         "current": {
-          "text": "bfwrt",
-          "value": "bfwrt"
+          "text": "bfrd",
+          "value": "bfrd"
         },
         "includeAll": false,
         "label": "Page Size",
         "name": "profile_type",
         "options": [
           {
-            "selected": false,
+            "selected": true,
             "text": "bfrd",
             "value": "bfrd"
           },
           {
-            "selected": true,
+            "selected": false,
             "text": "bfwrt",
             "value": "bfwrt"
           },
@@ -5300,6 +5337,7 @@
         "type": "custom"
       },
       {
+        "allowCustomValue": true,
         "current": {
           "text": "All",
           "value": "$__all"
@@ -5318,15 +5356,12 @@
         "type": "query"
       }
     ]
-  },
-  "time": {
-    "from": "2024-11-20T15:03:39.508Z",
-    "to": "2024-11-20T15:15:48.437Z"
   }
 },
-  "timepicker": {},
-  "timezone": "",
-  "title": "Influx Demo",
+  "title": "My Dashboard Title",
+  "uid": "your-dashboard-uid",
+  "version": 4,
+  "weekStart": "",
   "uid": "null",
   "version": 15,
   "weekStart": "",
