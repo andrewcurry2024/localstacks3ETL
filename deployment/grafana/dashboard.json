@@ -30,7 +30,7 @@
         "iconColor": "#8F3BB8",
         "limit": 100,
         "name": "max cpu",
-        "query": "select max(cpu_avg_busy) from osmon WHERE (\"customer\" =~ /^$customer_name$/ AND \"machine\" =~ /^$Machine$/) AND $timeFilter",
+        "query": "select max(cpu_avg_busy) from osmon WHERE (\"customer\" =~ /^$customer_name$/ AND \"server\" =~ /^$Machine$/) AND $timeFilter",
         "showIn": 0,
         "tags": [],
         "type": "tags"
