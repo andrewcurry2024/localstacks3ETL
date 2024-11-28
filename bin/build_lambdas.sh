@@ -17,5 +17,10 @@ zip  -r ../lambda.zip *  # Using -9 with recursive option here as well
 cd ../
 zip  lambda.zip handler.py
 zip  lambda.zip subroutines_config.json
+zip  lambda.zip etl/*
+zip  lambda.zip database/*
+zip  lambda.zip utils/*
+zip  lambda.zip configs/*
+zip  lambda.zip importers/*
 rm -rf package
 )
