@@ -2,13 +2,26 @@ from influxdb_client import InfluxDBClient, WriteOptions, Point, WritePrecision
 from influxdb_client.client.exceptions import InfluxDBError
 from influxdb_client.client.write_api import SYNCHRONOUS
 from datetime import datetime
+from utils.s3 import get_secret
 
 class Database:
     def __init__(self):
-        self.token = "my-super-secret-auth-token"
-        self.org = "myorg"
-        self.bucket = "mydb"
-        self.url = "http://influxdb:8086"
+        try:
+            secret_name = "influxdb-secrets"
+            secrets = get_secret(secret_name)
+
+            # Validate that required secrets are present
+            if not secrets or not all(k in secrets for k in ('token', 'org', 'bucket')):
+                raise ValueError("Missing required secrets keys: 'token', 'org', or 'bucket'")
+            self.token = secrets.get('token')
+            self.org = secrets.get('org')
+            self.bucket = secrets.get('bucket')
+            self.url = "http://influxdb:8086"
+
+        except Exception as e:
+            # Log and raise the exception for visibility
+            print(f"Error initializing Database class: {e}")
+            raise
 
 
     def write_summary_record(self, write_api, customer, server, filename):

@@ -1,4 +1,5 @@
 import boto3
+import json
 
 # Initialize S3 client
 endpoint_url = "https://localhost.localstack.cloud:4566"  # LocalStack URL
@@ -41,3 +42,29 @@ def move_s3_object(source_bucket: str, destination_bucket: str, object_key: str,
 
     except Exception as e:
         print(f"Error moving {object_key} from {source_bucket} to {destination_bucket}: {e}")
+
+def get_secret(secret_name):
+    """Retrieve and parse the secret from Secrets Manager."""
+    client = boto3.client("secretsmanager", endpoint_url="http://localhost:4566", region_name="us-east-1")
+    
+    try:
+        # Retrieve the secret value
+        response = client.get_secret_value(SecretId=secret_name)
+        
+        # Parse the secret string
+        if 'SecretString' in response:
+            secrets = json.loads(response['SecretString'])
+            return secrets
+        else:
+            raise ValueError("SecretString is missing in the response.")
+    
+    except client.exceptions.ResourceNotFoundException:
+        print(f"Secret {secret_name} not found.")
+    except client.exceptions.InvalidRequestException as e:
+        print(f"Invalid request: {e}")
+    except client.exceptions.InvalidParameterException as e:
+        print(f"Invalid parameter: {e}")
+    except Exception as e:
+        print(f"Unexpected error: {e}")
+
+    return None
