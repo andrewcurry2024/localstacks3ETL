@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export AWS_DEFAULT_REGION=us-east-1
+. .env
 
 awslocal s3 mb s3://localstack-s3etl-app-raw
 awslocal s3 mb s3://localstack-s3etl-app-processed
@@ -84,6 +84,11 @@ awslocal s3api put-bucket-notification-configuration \
 awslocal s3 mb s3://webapp
 awslocal s3 sync --delete ./website s3://webapp
 awslocal s3 website s3://webapp --index-document index.html
+
+awslocal secretsmanager create-secret \
+    --name influxdb-secrets \
+    --description "Secrets for InfluxDB connection" \
+    --secret-string "{\"token\": \"$INFLUX_TOKEN\", \"org\": \"$INFLUX_ORG\", \"bucket\": \"$INFLUX_BUCKET\"}"
 
 echo
 echo "Fetching function URL for 'presign' Lambda..."

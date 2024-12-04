@@ -26,18 +26,18 @@ start:				## Start the LocalStack Pro container in the detached mode
 
 		# Start InfluxDB container and connect it to the localstack_network
 		docker run -d --network localstack_network --name influxdb \
-		  -e DOCKER_INFLUXDB_INIT_USERNAME=admin \
-		  -e DOCKER_INFLUXDB_INIT_PASSWORD=adminpassword \
-		  -e DOCKER_INFLUXDB_INIT_ORG=myorg \
-		  -e DOCKER_INFLUXDB_INIT_BUCKET=mydb \
-		  -e DOCKER_INFLUXDB_INIT_MODE=setup \
-		  -e DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=my-super-secret-auth-token \
+		  -e DOCKER_INFLUXDB_INIT_USERNAME=$(DOCKER_INFLUXDB_INIT_USERNAME) \
+		  -e DOCKER_INFLUXDB_INIT_PASSWORD=$(DOCKER_INFLUXDB_INIT_PASSWORD) \
+		  -e DOCKER_INFLUXDB_INIT_ORG=$(DOCKER_INFLUXDB_INIT_ORG) \
+		  -e DOCKER_INFLUXDB_INIT_BUCKET=$(DOCKER_INFLUXDB_INIT_BUCKET) \
+		  -e DOCKER_INFLUXDB_INIT_MODE=$(DOCKER_INFLUXDB_INIT_MODE) \
+		  -e DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=$(DOCKER_INFLUXDB_INIT_ADMIN_TOKEN) \
 		  -p 8086:8086 \
 		  influxdb:2
 
 		# Start Grafana container and connect it to the localstack_network
 		docker run -d --network localstack_network --name grafana \
-		  -e GF_SECURITY_ADMIN_PASSWORD=admin \
+		  -e GF_SECURITY_ADMIN_PASSWORD=$(GF_SECURITY_ADMIN_PASSWORD) \
 		  -p 3000:3000 grafana/grafana:main
 
 		echo "Starting LocalStack with provided AUTH_TOKEN..."
