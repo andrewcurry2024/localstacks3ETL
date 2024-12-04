@@ -45,7 +45,7 @@ def move_s3_object(source_bucket: str, destination_bucket: str, object_key: str,
 
 def get_secret(secret_name):
     """Retrieve and parse the secret from Secrets Manager."""
-    client = boto3.client("secretsmanager", endpoint_url="http://localhost:4566", region_name="us-east-1")
+    client = boto3.client("secretsmanager", endpoint_url=endpoint_url)
     
     try:
         # Retrieve the secret value

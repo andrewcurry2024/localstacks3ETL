@@ -9,13 +9,15 @@ class Database:
         try:
             secret_name = "influxdb-secrets"
             secrets = get_secret(secret_name)
+            print("HELLO")
+            print(secrets)
 
             # Validate that required secrets are present
             if not secrets or not all(k in secrets for k in ('token', 'org', 'bucket')):
                 raise ValueError("Missing required secrets keys: 'token', 'org', or 'bucket'")
-            self.token = secrets.get('token')
-            self.org = secrets.get('org')
-            self.bucket = secrets.get('bucket')
+            self.token = secrets['token']
+            self.org = secrets['org']
+            self.bucket = secrets['bucket']
             self.url = "http://influxdb:8086"
 
         except Exception as e:
