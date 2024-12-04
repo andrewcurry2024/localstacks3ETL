@@ -165,10 +165,27 @@ Before starting, ensure you have the following tools installed:
 │   │   ├── handler.py
 │   ├── presign
 │   │   ├── handler.py
-│   └── transform
-│       ├── handler.py
-│       ├── requirements.txt
-│       └── subroutines_config.json
+│   ├── transform
+│   │   ├── configs
+│   │   │   └── __init__.py
+│   │   ├── database
+│   │   │   ├── __init__.py
+│   │   │   └── influx_writer.py
+│   │   ├── etl
+│   │   │   ├── __init__.py
+│   │   │   ├── clean.py
+│   │   │   ├── extract.py
+│   │   │   └── load.py
+│   │   ├── handler.py
+│   │   ├── importers
+│   │   │   └── __init__.py
+│   │   ├── lambda.zip
+│   │   ├── requirements.txt
+│   │   ├── subroutines_config.json
+│   │   └── utils
+│   │       ├── __init__.py
+│   │       ├── log_writer.py
+│   │       └── s3.py
 ├── out
 ├── pre_lambda
 │   ├── latest.py
