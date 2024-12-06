@@ -51,6 +51,7 @@ def import_partitions(header, filename, customer, server, subroutine_key, file, 
         df.columns = df.columns.str.strip()
         print(df)
         df = clean_data(df, header, customer, server, subroutine_key,digits)
+        df = df[~df['flgs'].apply(lambda x: isinstance(x, str))]
         print(f"DataFrame for {filename} with header: {header}")
         uuid_tmp=uuid.uuid4()
         # Create a dynamic filename
